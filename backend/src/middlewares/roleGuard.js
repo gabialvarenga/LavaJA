@@ -20,14 +20,12 @@ function donoSolicitacao(req, res, next) {
     return res.status(404).json({ erro: 'Solicitação não encontrada' });
   }
 
-  // Cliente só acessa a própria solicitação
   if (usuario.tipo === 'cliente' && solicitacao.cliente_id !== usuario.id) {
     return res.status(403).json({
       erro: 'Acesso negado. Você não é o dono desta solicitação.'
     });
   }
 
-  // Lavador só acessa solicitações pendentes (para aceitar) ou as suas
   if (usuario.tipo === 'lavador') {
     const ehPendente = solicitacao.status === 'pendente';
     const ehSeuServico = solicitacao.lavador_id === usuario.id;
@@ -38,7 +36,7 @@ function donoSolicitacao(req, res, next) {
     }
   }
 
-  req.solicitacao = solicitacao; // já disponível no controller
+  req.solicitacao = solicitacao;
   next();
 }
 

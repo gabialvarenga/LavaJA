@@ -27,7 +27,6 @@ async function criar({ cliente_id, veiculo_id, endereco, tipo_servico, observaco
 
   const solicitacao = solicitacaoRepo.criar({ cliente_id, veiculo_id, endereco, tipo_servico, observacoes });
 
-  // Publica evento no RabbitMQ → backend vai repassar via WebSocket aos apps
   await publish(ROUTING_KEYS.CRIADA, {
     id: solicitacao.id,
     cliente_id,
@@ -77,7 +76,6 @@ async function atualizarStatus(id, { status, lavador_id }, usuario) {
   const alterado_por = usuario.id;
   const atualizada = solicitacaoRepo.atualizarStatus(id, status, lavador_id, alterado_por);
 
-  // Mapa de routing keys por status
   const rkMap = {
     aceita:      ROUTING_KEYS.ACEITA,
     recusada:    ROUTING_KEYS.RECUSADA,
@@ -86,7 +84,6 @@ async function atualizarStatus(id, { status, lavador_id }, usuario) {
     cancelada:   ROUTING_KEYS.CANCELADA,
   };
 
-  // Publica evento → backend repassa via WebSocket ao cliente e/ou lavador
   await publish(rkMap[status] || ROUTING_KEYS.STATUS_ATUALIZADO, {
     id: atualizada.id,
     cliente_id: atualizada.cliente_id,

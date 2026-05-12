@@ -1,19 +1,3 @@
-/**
- * WebSocket Gateway — o coração da arquitetura orientada a eventos
- *
- * FLUXO CORRETO:
- *   RabbitMQ → [este módulo] → WebSocket → App Flutter
- *
- * O Flutter NUNCA fala direto com RabbitMQ.
- * Este módulo faz a ponte: consome eventos do MOM e repassa
- * em tempo real para os apps conectados via WebSocket.
- *
- * Cada cliente WebSocket se identifica ao conectar:
- *   { tipo: 'cliente' | 'lavador', usuario_id: 'uuid' }
- *
- * Assim conseguimos enviar a mensagem só para quem é relevante.
- */
-
 const { WebSocketServer } = require('ws');
 const amqp = require('amqplib');
 require('dotenv').config();
@@ -21,7 +5,6 @@ require('dotenv').config();
 const RABBITMQ_URL = process.env.RABBITMQ_URL || 'amqp://localhost';
 const EXCHANGE     = 'lavaja.solicitacoes';
 
-// Mapa de clientes conectados: usuario_id → WebSocket
 const clientes = new Map();
 
 let wss = null;
@@ -38,8 +21,6 @@ async function iniciar(httpServer) {
     let usuario_id = null;
     let tipo = null;
 
-    // App envia identificação ao conectar:
-    // { tipo: 'cliente', usuario_id: 'uuid-do-usuario' }
     ws.on('message', (raw) => {
       try {
         const msg = JSON.parse(raw);
@@ -70,10 +51,8 @@ async function iniciar(httpServer) {
 
     await channel.assertExchange(EXCHANGE, 'topic', { durable: true });
 
-    // Fila temporária exclusiva deste processo
     const { queue } = await channel.assertQueue('', { exclusive: true });
 
-    // Escuta TODOS os eventos do exchange
     await channel.bindQueue(queue, EXCHANGE, '#');
 
     channel.consume(queue, (msg) => {
@@ -84,16 +63,12 @@ async function iniciar(httpServer) {
 
         console.log(`📥 Evento recebido do RabbitMQ: [${evento}]`, payload.id || '');
 
-        // Decide para quem enviar baseado no tipo de evento
         const pacote = JSON.stringify({ evento, dados: payload });
 
         if (evento === 'solicitacao.criada') {
-          // Nova solicitação → notifica TODOS os lavadores conectados
           enviarParaTipo('lavador', pacote);
         } else {
-          // Mudança de status → notifica o cliente específico
           if (payload.cliente_id) enviarParaUsuario(payload.cliente_id, pacote);
-          // E o lavador específico (se já foi vinculado)
           if (payload.lavador_id) enviarParaUsuario(payload.lavador_id, pacote);
         }
 
@@ -110,7 +85,6 @@ async function iniciar(httpServer) {
   }
 }
 
-/** Envia mensagem para um usuário específico pelo ID */
 function enviarParaUsuario(usuario_id, pacote) {
   const ws = clientes.get(usuario_id);
   if (ws && ws.readyState === 1) {
@@ -119,7 +93,6 @@ function enviarParaUsuario(usuario_id, pacote) {
   }
 }
 
-/** Envia mensagem para todos os clientes de um tipo (ex: todos lavadores) */
 function enviarParaTipo(tipo, pacote) {
   let enviados = 0;
   clientes.forEach((ws, uid) => {

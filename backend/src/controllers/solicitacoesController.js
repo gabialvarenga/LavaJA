@@ -9,7 +9,7 @@ async function criar(req, res) {
 function listar(req, res) {
   try {
     const filtros = { ...req.query };
-    // cliente só enxerga as próprias solicitações
+
     if (req.usuario.tipo === 'cliente') filtros.cliente_id = req.usuario.id;
     const dados = solicitacaoService.listar(filtros);
     return res.json({ total: dados.length, dados });
