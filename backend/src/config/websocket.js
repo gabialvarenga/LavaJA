@@ -27,7 +27,7 @@ async function iniciar(httpServer) {
         if (msg.tipo && msg.usuario_id) {
           usuario_id = msg.usuario_id;
           tipo = msg.tipo;
-          clientes.set(usuario_id, ws);
+          clientes.set(usuario_id, { ws, tipo });
           console.log(`🔌 WebSocket conectado: ${tipo} [${usuario_id}]`);
           ws.send(JSON.stringify({ evento: 'conectado', mensagem: 'WebSocket ativo' }));
         }
