@@ -275,6 +275,34 @@ Os logs `📤 Evento publicado` são gerados por `rabbitmq.js` (producer) e os `
 
 ---
 
+### 6.2 RabbitMQ Management UI — Exchange `lavaja.solicitacoes`
+
+Captura do painel em `http://localhost:15672` durante execução do teste de carga (24/05/2026 às 20:38):
+
+![Exchange lavaja.solicitacoes — Publish In/Out 0.40/s](images/RabbitMQ-Evidencia.png)
+
+**O que a imagem mostra:**
+- Exchange `lavaja.solicitacoes` do tipo **topic**, com `durable: true`
+- **Publish (In): 0.40/s** — eventos sendo publicados pelo backend
+- **Publish (Out): 0.40/s** — eventos sendo entregues ao consumer (`websocket.js`)
+- Gráfico de message rate com picos durante o teste — evidência de tráfego real
+
+---
+
+### 6.3 RabbitMQ Management UI — Fila do Consumer
+
+![Fila exclusiva do websocket.js — Publish/Deliver/Consumer ack 0.60/s](images/RabbitMQ-Evidenvia02.png)
+
+**O que a imagem mostra:**
+- Fila exclusiva temporária `amq.gen-6I5wj...` criada pelo `websocket.js`
+- **Publish: 0.60/s** — mensagens chegando do exchange
+- **Deliver (manual ack): 0.60/s** — consumer recebendo as mensagens
+- **Consumer ack: 0.60/s** — `channel.ack(msg)` confirmando cada mensagem processada
+- **Ready: 0 / Unacked: 0 / Total: 0** — nenhuma mensagem perdida ou presa
+- `exclusive: true` — confirma que é a fila temporária do gateway WebSocket
+
+---
+
 ## 7. Demonstração de Comunicação Assíncrona
 
 A ausência de chamada REST direta entre produtor e consumidor é garantida pela arquitetura:
