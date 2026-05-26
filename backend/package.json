@@ -10,7 +10,8 @@
     "start": "node src/server.js",
     "dev": "nodemon src/server.js",
     "test:stress": "node scripts/stress_test.js",
-    "test:stress:heavy": "node scripts/stress_test.js 10 5"
+    "test:stress:heavy": "node scripts/stress_test.js 10 5",
+    "db:clear": "node scripts/clear_db.js --force"
   },
   "dependencies": {
     "amqplib": "^0.10.3",
