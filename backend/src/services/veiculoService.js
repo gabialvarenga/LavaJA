@@ -29,4 +29,12 @@ function listarPorUsuario(usuario_id) {
   return veiculoRepo.listarPorUsuario(usuario_id);
 }
 
-module.exports = { criar, buscarPorId, listarPorUsuario };
+function atualizar(id, { modelo, cor }, usuario_id) {
+  const veiculo = veiculoRepo.buscarPorId(id);
+  if (!veiculo) throw { status: 404, erro: 'Veículo não encontrado' };
+  if (veiculo.usuario_id !== usuario_id) throw { status: 403, erro: 'Veículo não pertence ao usuário' };
+  if (!modelo && !cor) throw { status: 400, erro: 'Informe ao menos modelo ou cor para atualizar' };
+  return veiculoRepo.atualizar(id, { modelo, cor });
+}
+
+module.exports = { criar, buscarPorId, listarPorUsuario, atualizar };

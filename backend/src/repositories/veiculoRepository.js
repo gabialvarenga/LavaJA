@@ -25,4 +25,11 @@ function listarPorUsuario(usuario_id) {
   return getDb().prepare('SELECT * FROM veiculos WHERE usuario_id = ? ORDER BY criado_em DESC').all(usuario_id);
 }
 
-module.exports = { criar, buscarPorPlaca, buscarPorId, listarPorUsuario };
+function atualizar(id, { modelo, cor }) {
+  getDb().prepare(
+    'UPDATE veiculos SET modelo = COALESCE(?, modelo), cor = COALESCE(?, cor) WHERE id = ?'
+  ).run(modelo || null, cor || null, id);
+  return buscarPorId(id);
+}
+
+module.exports = { criar, buscarPorPlaca, buscarPorId, listarPorUsuario, atualizar };

@@ -49,6 +49,21 @@ class _VeiculosTabState extends State<VeiculosTab> {
     );
   }
 
+  void _abrirEdicao(Veiculo v) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => _EditarVeiculoSheet(
+        veiculo: v,
+        onSalvo: (_) {
+          Navigator.of(context).pop();
+          _carregar();
+        },
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -89,7 +104,9 @@ class _VeiculosTabState extends State<VeiculosTab> {
   }
 
   Widget _buildCard(Veiculo v) {
-    return Container(
+    return GestureDetector(
+      onTap: () => _abrirEdicao(v),
+      child: Container(
       margin: const EdgeInsets.only(bottom: 8),
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
@@ -135,10 +152,163 @@ class _VeiculosTabState extends State<VeiculosTab> {
               size: 16, color: AppColors.textTertiary),
         ],
       ),
+      ),
     );
   }
 
 }
+
+// ── Editar veículo ────────────────────────────────────────────────────────────
+
+class _EditarVeiculoSheet extends StatefulWidget {
+  final Veiculo veiculo;
+  final void Function(Veiculo) onSalvo;
+
+  const _EditarVeiculoSheet({Key? key, required this.veiculo, required this.onSalvo})
+      : super(key: key);
+
+  @override
+  State<_EditarVeiculoSheet> createState() => _EditarVeiculoSheetState();
+}
+
+class _EditarVeiculoSheetState extends State<_EditarVeiculoSheet> {
+  late final TextEditingController _modeloCtrl;
+  late final TextEditingController _corCtrl;
+  bool _carregando = false;
+  String? _erro;
+
+  @override
+  void initState() {
+    super.initState();
+    _modeloCtrl = TextEditingController(text: widget.veiculo.modelo);
+    _corCtrl = TextEditingController(text: widget.veiculo.cor ?? '');
+  }
+
+  @override
+  void dispose() {
+    _modeloCtrl.dispose();
+    _corCtrl.dispose();
+    super.dispose();
+  }
+
+  Future<void> _salvar() async {
+    if (_modeloCtrl.text.trim().isEmpty) {
+      setState(() => _erro = 'Modelo é obrigatório');
+      return;
+    }
+    setState(() { _carregando = true; _erro = null; });
+    try {
+      final atualizado = await VeiculoService.atualizar(
+        id: widget.veiculo.id,
+        modelo: _modeloCtrl.text.trim(),
+        cor: _corCtrl.text.trim(),
+      );
+      if (!mounted) return;
+      widget.onSalvo(atualizado);
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _erro = e.toString().replaceFirst('Exception: ', '');
+        _carregando = false;
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+      child: Container(
+        decoration: const BoxDecoration(
+          color: AppColors.bgPrimary,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        ),
+        padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Center(
+              child: Container(
+                width: 40, height: 4,
+                decoration: BoxDecoration(
+                  color: AppColors.border,
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+            Row(
+              children: [
+                const Expanded(
+                  child: Text('Editar veículo',
+                    style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600,
+                        color: AppColors.textPrimary)),
+                ),
+                Text(widget.veiculo.placa,
+                  style: const TextStyle(fontSize: 12, color: AppColors.textTertiary)),
+              ],
+            ),
+            const SizedBox(height: 12),
+            _buildField(label: 'Modelo', controller: _modeloCtrl, hint: 'Ex: Honda Civic'),
+            _buildField(label: 'Cor', controller: _corCtrl, hint: 'Ex: Prata'),
+            if (_erro != null) ...[
+              const SizedBox(height: 8),
+              Text(_erro!, style: const TextStyle(fontSize: 11, color: AppColors.red)),
+            ],
+            const SizedBox(height: 16),
+            SizedBox(
+              width: double.infinity,
+              height: 44,
+              child: ElevatedButton(
+                onPressed: _carregando ? null : _salvar,
+                style: ElevatedButton.styleFrom(
+                  primary: AppColors.primary,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                ),
+                child: _carregando
+                    ? const SizedBox(width: 20, height: 20,
+                        child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+                    : const Text('Salvar alterações',
+                        style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: Colors.white)),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildField({required String label, required TextEditingController controller, required String hint}) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 10),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(label, style: const TextStyle(fontSize: 11, color: AppColors.textSecondary)),
+          const SizedBox(height: 4),
+          TextFormField(
+            controller: controller,
+            style: const TextStyle(fontSize: 13, color: AppColors.textPrimary),
+            decoration: InputDecoration(
+              hintText: hint,
+              hintStyle: const TextStyle(fontSize: 12, color: AppColors.textTertiary),
+              contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+              border: OutlineInputBorder(borderRadius: BorderRadius.circular(8),
+                  borderSide: const BorderSide(color: AppColors.border, width: 0.5)),
+              enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8),
+                  borderSide: const BorderSide(color: AppColors.border, width: 0.5)),
+              focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8),
+                  borderSide: const BorderSide(color: AppColors.primary, width: 1)),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ── Adicionar veículo ─────────────────────────────────────────────────────────
 
 class _AdicionarVeiculoSheet extends StatefulWidget {
   final void Function(Veiculo) onSalvo;

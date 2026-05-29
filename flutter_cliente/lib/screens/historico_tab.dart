@@ -15,7 +15,8 @@ class HistoricoTab extends StatefulWidget {
 class _HistoricoTabState extends State<HistoricoTab> {
   List<Solicitacao> _todas = [];
   bool _carregando = true;
-  String? _filtro; // null = todas
+  String? _filtro;
+  String? _erro;
 
   final List<_Filtro> _filtros = const [
     _Filtro(label: 'Todas', valor: null),
@@ -31,15 +32,15 @@ class _HistoricoTabState extends State<HistoricoTab> {
   }
 
   Future<void> _carregar() async {
-    setState(() => _carregando = true);
+    setState(() { _carregando = true; _erro = null; });
     try {
       final lista = await SolicitacaoService.listar();
+      setState(() { _todas = lista; _carregando = false; });
+    } catch (e) {
       setState(() {
-        _todas = lista;
+        _erro = e.toString().replaceFirst('Exception: ', '');
         _carregando = false;
       });
-    } catch (_) {
-      setState(() => _carregando = false);
     }
   }
 
@@ -83,7 +84,35 @@ class _HistoricoTabState extends State<HistoricoTab> {
                 ? const Center(
                     child: CircularProgressIndicator(color: AppColors.primary),
                   )
-                : RefreshIndicator(
+                : _erro != null
+                    ? RefreshIndicator(
+                        onRefresh: _carregar,
+                        color: AppColors.primary,
+                        child: ListView(children: [
+                          const SizedBox(height: 60),
+                          Center(
+                            child: Padding(
+                              padding: const EdgeInsets.all(24),
+                              child: Column(mainAxisSize: MainAxisSize.min, children: [
+                                const Icon(Icons.cloud_off_outlined,
+                                    size: 36, color: AppColors.textTertiary),
+                                const SizedBox(height: 8),
+                                Text(_erro!,
+                                    textAlign: TextAlign.center,
+                                    style: const TextStyle(
+                                        fontSize: 12, color: AppColors.textSecondary)),
+                                const SizedBox(height: 12),
+                                TextButton(
+                                  onPressed: _carregar,
+                                  child: const Text('Tentar novamente',
+                                      style: TextStyle(color: AppColors.primary)),
+                                ),
+                              ]),
+                            ),
+                          ),
+                        ]),
+                      )
+                    : RefreshIndicator(
                     onRefresh: _carregar,
                     color: AppColors.primary,
                     child: _filtradas.isEmpty

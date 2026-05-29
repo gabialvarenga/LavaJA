@@ -13,6 +13,19 @@ class VeiculoService {
         .toList();
   }
 
+  static Future<Veiculo> atualizar({
+    required String id,
+    required String modelo,
+    required String cor,
+  }) async {
+    final response = await ApiClient.patch('/veiculos/$id', {
+      'modelo': modelo,
+      'cor': cor,
+    });
+    final data = ApiClient.parseResponse(response) as Map<String, dynamic>;
+    return Veiculo.fromJson(data);
+  }
+
   static Future<Veiculo> criar({
     required String placa,
     required String modelo,

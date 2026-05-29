@@ -14,9 +14,10 @@ router.get  ('/usuarios',     autenticar, apenasLavador, usuarios.listar);
 router.get  ('/usuarios/:id', autenticar, apenasProprioOuLavador, usuarios.buscarPorId);
 
 // ── Veículos (só cliente) ─────────────────────────────────────────────────────
-router.post ('/veiculos',     autenticar, apenasCliente, veiculos.criar);
-router.get  ('/veiculos',     autenticar, apenasCliente, veiculos.listar);
-router.get  ('/veiculos/:id', autenticar, veiculos.buscarPorId);
+router.post  ('/veiculos',     autenticar, apenasCliente, veiculos.criar);
+router.get   ('/veiculos',     autenticar, apenasCliente, veiculos.listar);
+router.get   ('/veiculos/:id', autenticar, veiculos.buscarPorId);
+router.patch ('/veiculos/:id', autenticar, apenasCliente, veiculos.atualizar);
 
 // ── Solicitações ──────────────────────────────────────────────────────────────
 router.post ('/solicitacoes',               autenticar, apenasCliente,    solicitacoes.criar);
