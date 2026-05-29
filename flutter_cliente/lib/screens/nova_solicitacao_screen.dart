@@ -218,11 +218,11 @@ class _NovaSolicitacaoScreenState extends State<NovaSolicitacaoScreen> {
 
               // Endereço e observações
               _buildCard(
-                titulo: 'Localização',
+                titulo: 'Local da lavagem',
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _buildFieldLabel('Endereço do lavador'),
+                    _buildFieldLabel('Onde você vai lavar o carro?'),
                     Autocomplete<String>(
                       optionsBuilder: (v) {
                         if (v.text.length < 2) return const [];
@@ -241,7 +241,7 @@ class _NovaSolicitacaoScreenState extends State<NovaSolicitacaoScreen> {
                               fontSize: 13,
                               color: AppColors.textPrimary),
                           decoration: _inputDecoration(
-                              hint: 'Ex: Av. Afonso Pena, 1500'),
+                              hint: 'Ex: Av. Afonso Pena, 1500 - BH'),
                         );
                       },
                       optionsViewBuilder: (ctx, onSelected, options) =>
