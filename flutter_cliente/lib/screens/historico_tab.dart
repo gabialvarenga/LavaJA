@@ -66,19 +66,27 @@ class _HistoricoTabState extends State<HistoricoTab> {
             color: AppColors.textPrimary,
           ),
         ),
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(48),
+          child: Container(
+            height: 48,
+            alignment: Alignment.centerLeft,
+            decoration: const BoxDecoration(
+              color: AppColors.bgPrimary,
+              border: Border(
+                bottom: BorderSide(color: AppColors.borderLight, width: 1),
+              ),
+            ),
+            child: ListView(
+              scrollDirection: Axis.horizontal,
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              children: _filtros.map((f) => _buildPill(f)).toList(),
+            ),
+          ),
+        ),
       ),
       body: Column(
         children: [
-          Container(
-            color: AppColors.bgPrimary,
-            padding: const EdgeInsets.fromLTRB(12, 4, 12, 12),
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                children: _filtros.map((f) => _buildPill(f)).toList(),
-              ),
-            ),
-          ),
           Expanded(
             child: _carregando
                 ? const Center(
@@ -156,21 +164,21 @@ class _HistoricoTabState extends State<HistoricoTab> {
     return GestureDetector(
       onTap: () => setState(() => _filtro = f.valor),
       child: Container(
-        margin: const EdgeInsets.only(right: 6),
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        margin: const EdgeInsets.only(right: 8, top: 10, bottom: 10),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 0),
         decoration: BoxDecoration(
-          color: sel ? AppColors.primaryLight : AppColors.bgSecondary,
+          color: sel ? AppColors.primary : Colors.transparent,
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
-            color: sel ? AppColors.primaryBorder : AppColors.border,
-            width: 0.5,
+            color: sel ? AppColors.primary : AppColors.border,
+            width: 1,
           ),
         ),
         child: Text(
           f.label,
           style: TextStyle(
-            fontSize: 12,
-            color: sel ? AppColors.primaryDark : AppColors.textSecondary,
+            fontSize: 13,
+            color: sel ? Colors.white : AppColors.textSecondary,
             fontWeight: sel ? FontWeight.w500 : FontWeight.normal,
           ),
         ),
