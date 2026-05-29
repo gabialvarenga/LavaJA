@@ -20,4 +20,10 @@ function listar(req, res) {
   } catch (e) { return res.status(e.status || 500).json({ erro: e.erro || e.message }); }
 }
 
-module.exports = { criar, buscarPorId, listar };
+function login(req, res) {
+  try {
+    return res.json(usuarioService.login(req.body.email));
+  } catch (e) { return res.status(e.status || 500).json({ erro: e.erro || e.message }); }
+}
+
+module.exports = { criar, buscarPorId, listar, login };

@@ -25,4 +25,11 @@ function listar({ tipo, nome } = {}) {
   return usuarioRepo.listar({ tipo, nome });
 }
 
-module.exports = { criar, buscarPorId, listar };
+function login(email) {
+  if (!email) throw { status: 400, erro: 'Campo obrigatório: email' };
+  const usuario = usuarioRepo.buscarPorEmail(email);
+  if (!usuario) throw { status: 404, erro: 'Nenhuma conta encontrada com este e-mail' };
+  return usuario;
+}
+
+module.exports = { criar, buscarPorId, listar, login };

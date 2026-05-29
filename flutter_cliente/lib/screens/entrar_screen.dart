@@ -13,37 +13,33 @@ class EntrarScreen extends StatefulWidget {
 }
 
 class _EntrarScreenState extends State<EntrarScreen> {
-  final _idCtrl = TextEditingController();
+  final _emailCtrl = TextEditingController();
   bool _carregando = false;
   String? _erro;
 
   @override
   void dispose() {
-    _idCtrl.dispose();
+    _emailCtrl.dispose();
     super.dispose();
   }
 
   Future<void> _entrar() async {
-    final id = _idCtrl.text.trim();
-    if (id.isEmpty) {
-      setState(() => _erro = 'Informe o ID do usuário');
+    final email = _emailCtrl.text.trim();
+    if (email.isEmpty || !email.contains('@')) {
+      setState(() => _erro = 'Informe um e-mail válido');
       return;
     }
 
     setState(() { _carregando = true; _erro = null; });
 
     try {
-      // Salva temporariamente para conseguir fazer a requisição autenticada
-      await LocalStorage.saveUser(id: id, nome: '', email: '', tipo: 'cliente');
-
-      final response = await ApiClient.get('/usuarios/$id');
+      final response = await ApiClient.post('/usuarios/login', {'email': email});
       final data = ApiClient.parseResponse(response) as Map<String, dynamic>;
       final usuario = Usuario.fromJson(data);
 
       if (usuario.tipo != 'cliente') {
-        await LocalStorage.clear();
         setState(() {
-          _erro = 'Este ID pertence a um lavador. Use o app LavaJÁ Lavador.';
+          _erro = 'Esta conta é de lavador. Use o app LavaJÁ Lavador.';
           _carregando = false;
         });
         return;
@@ -63,9 +59,8 @@ class _EntrarScreenState extends State<EntrarScreen> {
       );
     } catch (e) {
       if (!mounted) return;
-      await LocalStorage.clear();
       setState(() {
-        _erro = 'ID não encontrado. Verifique o ID ou crie uma conta.';
+        _erro = e.toString().replaceFirst('Exception: ', '');
         _carregando = false;
       });
     }
@@ -98,49 +93,64 @@ class _EntrarScreenState extends State<EntrarScreen> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Icon(Icons.water_drop,
-                        size: 48, color: AppColors.primary),
+                    Container(
+                      width: 60,
+                      height: 60,
+                      decoration: BoxDecoration(
+                        color: AppColors.primary,
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: const Icon(Icons.water_drop,
+                          size: 30, color: Colors.white),
+                    ),
                     const SizedBox(height: 16),
                     const Text(
                       'Bem-vinda de volta!',
                       style: TextStyle(
-                        fontSize: 18,
+                        fontSize: 20,
                         fontWeight: FontWeight.w600,
                         color: AppColors.textPrimary,
                       ),
                     ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: 6),
                     const Text(
-                      'Informe o ID do seu usuário para continuar.',
-                      style: TextStyle(fontSize: 13, color: AppColors.textSecondary),
+                      'Use o e-mail cadastrado para entrar.',
+                      style: TextStyle(
+                          fontSize: 13, color: AppColors.textSecondary),
                       textAlign: TextAlign.center,
                     ),
-                    const SizedBox(height: 28),
+                    const SizedBox(height: 32),
                     Container(
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
                         color: AppColors.bgPrimary,
                         borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: AppColors.border, width: 0.5),
+                        border:
+                            Border.all(color: AppColors.border, width: 0.5),
                       ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
-                            'ID do usuário',
-                            style: TextStyle(fontSize: 11, color: AppColors.textSecondary),
-                          ),
+                          const Text('E-mail',
+                              style: TextStyle(
+                                  fontSize: 11,
+                                  color: AppColors.textSecondary)),
                           const SizedBox(height: 6),
                           TextField(
-                            controller: _idCtrl,
+                            controller: _emailCtrl,
+                            keyboardType: TextInputType.emailAddress,
+                            autofocus: true,
                             style: const TextStyle(
-                                fontSize: 13, color: AppColors.textPrimary),
+                                fontSize: 14, color: AppColors.textPrimary),
                             decoration: InputDecoration(
-                              hintText: 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx',
+                              hintText: 'seu@email.com',
                               hintStyle: const TextStyle(
-                                  fontSize: 11, color: AppColors.textTertiary),
+                                  fontSize: 13,
+                                  color: AppColors.textTertiary),
+                              prefixIcon: const Icon(Icons.email_outlined,
+                                  size: 18, color: AppColors.textTertiary),
                               contentPadding: const EdgeInsets.symmetric(
-                                  horizontal: 12, vertical: 10),
+                                  horizontal: 12, vertical: 12),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(8),
                                 borderSide: const BorderSide(
@@ -154,15 +164,10 @@ class _EntrarScreenState extends State<EntrarScreen> {
                               focusedBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(8),
                                 borderSide: const BorderSide(
-                                    color: AppColors.primary, width: 1),
+                                    color: AppColors.primary, width: 1.5),
                               ),
                             ),
-                          ),
-                          const SizedBox(height: 8),
-                          const Text(
-                            'Encontre seu ID em: Perfil → ID do usuário',
-                            style: TextStyle(
-                                fontSize: 10, color: AppColors.textTertiary),
+                            onSubmitted: (_) => _entrar(),
                           ),
                         ],
                       ),
@@ -183,7 +188,8 @@ class _EntrarScreenState extends State<EntrarScreen> {
                             Expanded(
                               child: Text(_erro!,
                                   style: const TextStyle(
-                                      fontSize: 12, color: AppColors.redDark)),
+                                      fontSize: 12,
+                                      color: AppColors.redDark)),
                             ),
                           ],
                         ),

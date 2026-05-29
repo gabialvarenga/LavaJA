@@ -9,7 +9,8 @@ const { autenticar, apenasCliente, apenasLavador, apenasProprioOuLavador } = req
 const { donoSolicitacao } = require('../middlewares/roleGuard');
 
 // ── Usuários ──────────────────────────────────────────────────────────────────
-router.post ('/usuarios',     usuarios.criar);
+router.post ('/usuarios',       usuarios.criar);
+router.post ('/usuarios/login', usuarios.login);   // público — auth simplificada sem senha
 router.get  ('/usuarios',     autenticar, apenasLavador, usuarios.listar);
 router.get  ('/usuarios/:id', autenticar, apenasProprioOuLavador, usuarios.buscarPorId);
 
