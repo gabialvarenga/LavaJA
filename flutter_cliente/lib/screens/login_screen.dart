@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../core/constants/app_colors.dart';
 import '../core/storage/local_storage.dart';
 import 'cadastro_screen.dart';
+import 'entrar_screen.dart';
 import 'main_screen.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -39,6 +40,12 @@ class _LoginScreenState extends State<LoginScreen> {
   void _irParaCadastro() {
     Navigator.of(context).push(
       MaterialPageRoute(builder: (_) => const CadastroScreen()),
+    );
+  }
+
+  void _irParaEntrar() {
+    Navigator.of(context).push(
+      MaterialPageRoute(builder: (_) => const EntrarScreen()),
     );
   }
 
@@ -146,7 +153,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         width: double.infinity,
                         height: 44,
                         child: OutlinedButton(
-                          onPressed: _irParaCadastro,
+                          onPressed: _irParaEntrar,
                           style: OutlinedButton.styleFrom(
                             side: const BorderSide(
                                 color: AppColors.border, width: 0.5),

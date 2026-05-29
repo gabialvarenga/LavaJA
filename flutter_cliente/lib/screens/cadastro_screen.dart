@@ -70,9 +70,30 @@ class _CadastroScreenState extends State<CadastroScreen> {
         ),
       ),
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16),
-          child: Form(
+        child: LayoutBuilder(
+          builder: (ctx, constraints) => SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: ConstrainedBox(
+            constraints: BoxConstraints(minHeight: constraints.maxHeight),
+            child: IntrinsicHeight(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const SizedBox(height: 16),
+                  _buildFormContent(context),
+                  const SizedBox(height: 24),
+                ],
+              ),
+            ),
+          ),
+        ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildFormContent(BuildContext context) {
+    return Form(
             key: _formKey,
             child: Column(
               children: [
@@ -161,10 +182,7 @@ class _CadastroScreenState extends State<CadastroScreen> {
                 ),
               ],
             ),
-          ),
-        ),
-      ),
-    );
+          );
   }
 
   Widget _buildCard({required List<Widget> children}) {
