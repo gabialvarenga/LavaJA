@@ -97,6 +97,17 @@ extension TipoServicoX on TipoServico {
         return 'Polimento completo da lataria';
     }
   }
+
+  String get preco {
+    switch (this) {
+      case TipoServico.simples:
+        return 'R\$ 30,00';
+      case TipoServico.completa:
+        return 'R\$ 60,00';
+      case TipoServico.polimento:
+        return 'R\$ 150,00';
+    }
+  }
 }
 
 class HistoricoStatus {

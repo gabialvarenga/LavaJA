@@ -14,10 +14,29 @@ class NovaSolicitacaoScreen extends StatefulWidget {
 }
 
 class _NovaSolicitacaoScreenState extends State<NovaSolicitacaoScreen> {
+  static const _sugestoesEndereco = [
+    'Av. Afonso Pena, 1500 - Centro, BH',
+    'Av. Afonso Pena, 4000 - Funcionários, BH',
+    'Av. Amazonas, 500 - Centro, BH',
+    'Av. Antônio Carlos, 6627 - Pampulha, BH',
+    'Av. do Contorno, 5000 - Coração de Jesus, BH',
+    'Av. Fleming, 760 - Gutierrez, BH',
+    'Av. Getúlio Vargas, 1000 - Savassi, BH',
+    'Av. Nossa Sra. do Carmo, 500 - Savassi, BH',
+    'Av. Paulista, 900 - Savassi, BH',
+    'Av. Raja Gabáglia, 3000 - Gutierrez, BH',
+    'R. da Bahia, 1148 - Centro, BH',
+    'R. dos Inconfidentes, 1190 - Savassi, BH',
+    'R. Marília de Dirceu, 100 - Santo Antônio, BH',
+    'R. Sergipe, 1122 - Savassi, BH',
+    'Praça da Liberdade, s/n - Funcionários, BH',
+    'Praça Sete de Setembro, s/n - Centro, BH',
+  ];
+
   List<Veiculo> _veiculos = [];
   Veiculo? _veiculoSelecionado;
   TipoServico _tipoServico = TipoServico.simples;
-  final _enderecoCtrl = TextEditingController();
+  String _enderecoValue = '';
   final _obsCtrl = TextEditingController();
   bool _carregandoVeiculos = true;
   bool _enviando = false;
@@ -31,7 +50,6 @@ class _NovaSolicitacaoScreenState extends State<NovaSolicitacaoScreen> {
 
   @override
   void dispose() {
-    _enderecoCtrl.dispose();
     _obsCtrl.dispose();
     super.dispose();
   }
@@ -54,7 +72,7 @@ class _NovaSolicitacaoScreenState extends State<NovaSolicitacaoScreen> {
       setState(() => _erro = 'Selecione um veículo');
       return;
     }
-    if (_enderecoCtrl.text.trim().isEmpty) {
+    if (_enderecoValue.trim().isEmpty) {
       setState(() => _erro = 'Informe o endereço do lavador');
       return;
     }
@@ -67,7 +85,7 @@ class _NovaSolicitacaoScreenState extends State<NovaSolicitacaoScreen> {
     try {
       await SolicitacaoService.criar(
         veiculoId: _veiculoSelecionado!.id,
-        endereco: _enderecoCtrl.text.trim(),
+        endereco: _enderecoValue.trim(),
         tipoServico: _tipoServico,
         observacoes: _obsCtrl.text.trim(),
       );
@@ -156,23 +174,37 @@ class _NovaSolicitacaoScreenState extends State<NovaSolicitacaoScreen> {
                         color: AppColors.bgSecondary,
                         borderRadius: BorderRadius.circular(8),
                       ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                      child: Row(
                         children: [
-                          Text(
-                            _tipoServico.label,
-                            style: const TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w500,
-                              color: AppColors.textPrimary,
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  _tipoServico.label,
+                                  style: const TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w500,
+                                    color: AppColors.textPrimary,
+                                  ),
+                                ),
+                                const SizedBox(height: 2),
+                                Text(
+                                  _tipoServico.descricao,
+                                  style: const TextStyle(
+                                    fontSize: 11,
+                                    color: AppColors.textSecondary,
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
-                          const SizedBox(height: 2),
                           Text(
-                            _tipoServico.descricao,
+                            _tipoServico.preco,
                             style: const TextStyle(
-                              fontSize: 11,
-                              color: AppColors.textSecondary,
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                              color: AppColors.primary,
                             ),
                           ),
                         ],
@@ -191,12 +223,58 @@ class _NovaSolicitacaoScreenState extends State<NovaSolicitacaoScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     _buildFieldLabel('Endereço do lavador'),
-                    TextFormField(
-                      controller: _enderecoCtrl,
-                      style: const TextStyle(
-                          fontSize: 13, color: AppColors.textPrimary),
-                      decoration: _inputDecoration(
-                          hint: 'Ex: Av. Afonso Pena, 1500'),
+                    Autocomplete<String>(
+                      optionsBuilder: (v) {
+                        if (v.text.length < 2) return const [];
+                        return _sugestoesEndereco.where((s) =>
+                            s.toLowerCase().contains(v.text.toLowerCase()));
+                      },
+                      onSelected: (v) =>
+                          setState(() => _enderecoValue = v),
+                      fieldViewBuilder: (ctx, ctrl, fn, _) {
+                        ctrl.addListener(
+                            () => _enderecoValue = ctrl.text);
+                        return TextFormField(
+                          controller: ctrl,
+                          focusNode: fn,
+                          style: const TextStyle(
+                              fontSize: 13,
+                              color: AppColors.textPrimary),
+                          decoration: _inputDecoration(
+                              hint: 'Ex: Av. Afonso Pena, 1500'),
+                        );
+                      },
+                      optionsViewBuilder: (ctx, onSelected, options) =>
+                          Align(
+                        alignment: Alignment.topLeft,
+                        child: Material(
+                          elevation: 4,
+                          borderRadius: BorderRadius.circular(8),
+                          child: ConstrainedBox(
+                            constraints:
+                                const BoxConstraints(maxHeight: 200),
+                            child: ListView.builder(
+                              padding: EdgeInsets.zero,
+                              shrinkWrap: true,
+                              itemCount: options.length,
+                              itemBuilder: (_, i) {
+                                final opt = options.elementAt(i);
+                                return ListTile(
+                                  dense: true,
+                                  leading: const Icon(
+                                      Icons.location_on_outlined,
+                                      size: 16,
+                                      color: AppColors.textTertiary),
+                                  title: Text(opt,
+                                      style: const TextStyle(
+                                          fontSize: 12)),
+                                  onTap: () => onSelected(opt),
+                                );
+                              },
+                            ),
+                          ),
+                        ),
+                      ),
                     ),
                     const SizedBox(height: 10),
                     _buildFieldLabel('Observações (opcional)'),

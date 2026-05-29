@@ -66,51 +66,58 @@ class _HistoricoTabState extends State<HistoricoTab> {
           ),
         ),
       ),
-      body: RefreshIndicator(
-        onRefresh: _carregar,
-        color: AppColors.primary,
-        child: Column(
-          children: [
-            Container(
-              color: AppColors.bgPrimary,
-              padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
-              child: SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  children: _filtros
-                      .map((f) => _buildPill(f))
-                      .toList(),
-                ),
+      body: Column(
+        children: [
+          Container(
+            color: AppColors.bgPrimary,
+            padding: const EdgeInsets.fromLTRB(12, 4, 12, 12),
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: _filtros.map((f) => _buildPill(f)).toList(),
               ),
             ),
-            Expanded(
-              child: _carregando
-                  ? const Center(
-                      child: CircularProgressIndicator(color: AppColors.primary))
-                  : _filtradas.isEmpty
-                      ? const Center(
-                          child: Text(
-                            'Nenhuma solicitação',
-                            style: TextStyle(color: AppColors.textSecondary),
+          ),
+          Expanded(
+            child: _carregando
+                ? const Center(
+                    child: CircularProgressIndicator(color: AppColors.primary),
+                  )
+                : RefreshIndicator(
+                    onRefresh: _carregar,
+                    color: AppColors.primary,
+                    child: _filtradas.isEmpty
+                        ? ListView(
+                            children: const [
+                              SizedBox(height: 80),
+                              Center(
+                                child: Text(
+                                  'Nenhuma solicitação',
+                                  style: TextStyle(color: AppColors.textSecondary),
+                                ),
+                              ),
+                            ],
+                          )
+                        : ListView.builder(
+                            padding: const EdgeInsets.all(12),
+                            itemCount: _filtradas.length,
+                            itemBuilder: (_, i) => SolicitacaoCard(
+                              solicitacao: _filtradas[i],
+                              onTap: () async {
+                                await Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (_) => DetalhesSolicitacaoScreen(
+                                      solicitacaoId: _filtradas[i].id,
+                                    ),
+                                  ),
+                                );
+                                _carregar();
+                              },
+                            ),
                           ),
-                        )
-                      : ListView.builder(
-                          padding: const EdgeInsets.all(12),
-                          itemCount: _filtradas.length,
-                          itemBuilder: (_, i) => SolicitacaoCard(
-                            solicitacao: _filtradas[i],
-                            onTap: () async {
-                              await Navigator.of(context).push(MaterialPageRoute(
-                                builder: (_) => DetalhesSolicitacaoScreen(
-                                    solicitacaoId: _filtradas[i].id),
-                              ));
-                              _carregar();
-                            },
-                          ),
-                        ),
-            ),
-          ],
-        ),
+                  ),
+          ),
+        ],
       ),
     );
   }

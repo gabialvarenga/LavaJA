@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../core/constants/app_colors.dart';
+import '../core/formatters/placa_formatter.dart';
 import '../models/veiculo.dart';
 import '../services/veiculo_service.dart';
 
@@ -80,7 +82,6 @@ class _VeiculosTabState extends State<VeiculosTab> {
                 padding: const EdgeInsets.all(12),
                 children: [
                   ..._veiculos.map((v) => _buildCard(v)),
-                  _buildCardAdicionar(),
                 ],
               ),
             ),
@@ -137,35 +138,6 @@ class _VeiculosTabState extends State<VeiculosTab> {
     );
   }
 
-  Widget _buildCardAdicionar() {
-    return GestureDetector(
-      onTap: _abrirFormulario,
-      child: Container(
-        margin: const EdgeInsets.only(bottom: 8),
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: AppColors.bgPrimary,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-            color: AppColors.border,
-            width: 0.5,
-            // dashed não é nativo no Flutter — usa border sólida
-          ),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: const [
-            Icon(Icons.add, size: 18, color: AppColors.textTertiary),
-            SizedBox(width: 6),
-            Text(
-              'Adicionar veículo',
-              style: TextStyle(fontSize: 13, color: AppColors.textSecondary),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
 }
 
 class _AdicionarVeiculoSheet extends StatefulWidget {
@@ -256,7 +228,12 @@ class _AdicionarVeiculoSheetState extends State<_AdicionarVeiculoSheet> {
               _buildField(
                   label: 'Modelo', controller: _modeloCtrl, hint: 'Ex: Honda Civic'),
               _buildField(
-                  label: 'Placa', controller: _placaCtrl, hint: 'ABC-1D23'),
+                label: 'Placa',
+                controller: _placaCtrl,
+                hint: 'ABC-1234',
+                inputFormatters: [PlacaInputFormatter()],
+                keyboardType: TextInputType.text,
+              ),
               _buildField(
                   label: 'Cor', controller: _corCtrl, hint: 'Ex: Prata', required: false),
               if (_erro != null) ...[
@@ -304,6 +281,8 @@ class _AdicionarVeiculoSheetState extends State<_AdicionarVeiculoSheet> {
     required TextEditingController controller,
     required String hint,
     bool required = true,
+    List<TextInputFormatter>? inputFormatters,
+    TextInputType? keyboardType,
   }) {
     return Padding(
       padding: const EdgeInsets.only(top: 10),
@@ -316,6 +295,8 @@ class _AdicionarVeiculoSheetState extends State<_AdicionarVeiculoSheet> {
           const SizedBox(height: 4),
           TextFormField(
             controller: controller,
+            inputFormatters: inputFormatters,
+            keyboardType: keyboardType,
             validator: required
                 ? (v) => (v == null || v.trim().isEmpty)
                     ? 'Campo obrigatório'
