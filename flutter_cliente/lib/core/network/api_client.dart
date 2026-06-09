@@ -16,29 +16,34 @@ class ApiClient {
     };
   }
 
+  static const _timeout = Duration(seconds: 10);
+
   static Future<http.Response> get(String path) async {
-    return http.get(
-      Uri.parse('$_baseUrl$path'),
-      headers: await _headers(),
-    );
+    return http
+        .get(Uri.parse('$_baseUrl$path'), headers: await _headers())
+        .timeout(_timeout,
+            onTimeout: () =>
+                throw Exception('Servidor não respondeu. Verifique sua conexão.'));
   }
 
   static Future<http.Response> post(
       String path, Map<String, dynamic> body) async {
-    return http.post(
-      Uri.parse('$_baseUrl$path'),
-      headers: await _headers(),
-      body: jsonEncode(body),
-    );
+    return http
+        .post(Uri.parse('$_baseUrl$path'),
+            headers: await _headers(), body: jsonEncode(body))
+        .timeout(_timeout,
+            onTimeout: () =>
+                throw Exception('Servidor não respondeu. Verifique sua conexão.'));
   }
 
   static Future<http.Response> patch(
       String path, Map<String, dynamic> body) async {
-    return http.patch(
-      Uri.parse('$_baseUrl$path'),
-      headers: await _headers(),
-      body: jsonEncode(body),
-    );
+    return http
+        .patch(Uri.parse('$_baseUrl$path'),
+            headers: await _headers(), body: jsonEncode(body))
+        .timeout(_timeout,
+            onTimeout: () =>
+                throw Exception('Servidor não respondeu. Verifique sua conexão.'));
   }
 
   static dynamic parseResponse(http.Response response) {
