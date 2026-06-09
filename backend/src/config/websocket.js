@@ -14,7 +14,7 @@ let wss = null;
  * @param {http.Server} httpServer — o mesmo servidor HTTP do Express
  */
 async function iniciar(httpServer) {
-  // ── 1. Servidor WebSocket (compartilha porta com Express) ──────────
+
   wss = new WebSocketServer({ server: httpServer });
 
   wss.on('connection', (ws) => {
@@ -44,7 +44,6 @@ async function iniciar(httpServer) {
 
   console.log('✅ WebSocket Gateway iniciado');
 
-  // ── 2. Consumer do RabbitMQ ────────────────────────────────────────
   try {
     const conn    = await amqp.connect(RABBITMQ_URL);
     const channel = await conn.createChannel();

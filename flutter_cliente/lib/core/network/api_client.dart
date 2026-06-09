@@ -6,7 +6,7 @@ class ApiClient {
   // Dispositivo físico via USB: rode "adb reverse tcp:3000 tcp:3000" e use localhost
   // Emulador Android: troque para http://10.0.2.2:3000/api
   // WiFi (sem USB): troque pelo IP da máquina, ex: http://192.168.102.152:3000/api
-  static const String _baseUrl = 'http://localhost:3000/api';
+  static const String _baseUrl = 'http://10.221.65.1:3000/api';
 
   static Future<Map<String, String>> _headers() async {
     final userId = await LocalStorage.getUserId();

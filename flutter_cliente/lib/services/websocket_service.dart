@@ -29,8 +29,7 @@ class WebSocketService extends ChangeNotifier {
 
     try {
       _channel = WebSocketChannel.connect(
-        // Mesma regra do api_client.dart — adb reverse tcp:3000 tcp:3000
-        Uri.parse('ws://localhost:3000'),
+        Uri.parse('ws://10.221.65.1:3000'),
       );
 
       _channel!.sink.add(jsonEncode({
