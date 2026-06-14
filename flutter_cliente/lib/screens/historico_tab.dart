@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../core/constants/app_colors.dart';
 import '../models/solicitacao.dart';
 import '../services/solicitacao_service.dart';
+import '../services/websocket_service.dart';
 import '../widgets/solicitacao_card.dart';
 import 'detalhes_solicitacao_screen.dart';
 
@@ -17,6 +19,7 @@ class _HistoricoTabState extends State<HistoricoTab> {
   bool _carregando = true;
   String? _filtro;
   String? _erro;
+  WsEvent? _ultimoEvento;
 
   final List<_Filtro> _filtros = const [
     _Filtro(label: 'Todas', valor: null),
@@ -29,6 +32,26 @@ class _HistoricoTabState extends State<HistoricoTab> {
   void initState() {
     super.initState();
     _carregar();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Recarrega quando chega um evento de mudança de status via WebSocket
+    final evento = context.watch<WebSocketService>().ultimoEvento;
+    if (evento != null && evento != _ultimoEvento) {
+      _ultimoEvento = evento;
+      const eventosDeReload = [
+        'solicitacao.aceita',
+        'solicitacao.recusada',
+        'solicitacao.em_execucao',
+        'solicitacao.concluida',
+        'solicitacao.cancelada',
+      ];
+      if (eventosDeReload.contains(evento.evento)) {
+        _carregar();
+      }
+    }
   }
 
   Future<void> _carregar() async {

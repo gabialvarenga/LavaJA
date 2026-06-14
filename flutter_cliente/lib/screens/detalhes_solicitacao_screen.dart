@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../core/constants/app_colors.dart';
+import '../core/formatters/date_formatter.dart';
 import '../models/solicitacao.dart';
 import '../services/solicitacao_service.dart';
 import '../services/websocket_service.dart';
@@ -309,8 +310,8 @@ class _DetalhesSolicitacaoScreenState
         return TimelineItem(
           state: dotState,
           label: StatusSolicitacaoX.fromString(h.statusNovo).label,
-          sublabel: h.criadoEm.length >= 16
-              ? h.criadoEm.substring(11, 16)
+          sublabel: DateFormatter.dataHoraLocal(h.criadoEm).isNotEmpty
+              ? DateFormatter.dataHoraLocal(h.criadoEm)
               : null,
           isLast: isLast && _statusEhFinal(s.status),
         );

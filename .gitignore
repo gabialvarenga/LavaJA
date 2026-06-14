@@ -1,0 +1,8 @@
+# Vídeos de demonstração — hospedar fora do Git (excedem o limite de 100 MB do GitHub)
+docs/videos/*.mp4
+
+# Dependências
+node_modules/
+
+# Banco de dados local (dev)
+backend/database.sqlite
