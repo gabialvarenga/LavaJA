@@ -85,18 +85,18 @@ async function iniciar(httpServer) {
 }
 
 function enviarParaUsuario(usuario_id, pacote) {
-  const ws = clientes.get(usuario_id);
-  if (ws && ws.readyState === 1) {
-    ws.send(pacote);
+  const cliente = clientes.get(usuario_id);
+  if (cliente && cliente.ws.readyState === 1) {
+    cliente.ws.send(pacote);
     console.log(`📤 WebSocket → usuário [${usuario_id}]`);
   }
 }
 
 function enviarParaTipo(tipo, pacote) {
   let enviados = 0;
-  clientes.forEach((ws, uid) => {
-    if (ws.readyState === 1) {
-      ws.send(pacote);
+  clientes.forEach((cliente) => {
+    if (cliente.tipo === tipo && cliente.ws.readyState === 1) {
+      cliente.ws.send(pacote);
       enviados++;
     }
   });

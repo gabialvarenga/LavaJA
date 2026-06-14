@@ -45,12 +45,14 @@ function listar({ status, cliente_id, lavador_id } = {}) {
 
 function atualizarStatus(id, status, lavador_id, alterado_por) {
   const db = getDb();
+  const atual = db.prepare('SELECT status FROM solicitacoes WHERE id = ?').get(id);
+  const status_anterior = atual ? atual.status : null;
   db.prepare(`
     UPDATE solicitacoes
     SET status = ?, lavador_id = COALESCE(?, lavador_id), atualizado_em = datetime('now')
     WHERE id = ?
   `).run(status, lavador_id || null, id);
-  registrarHistorico(id, null, status, alterado_por);
+  registrarHistorico(id, status_anterior, status, alterado_por);
   return buscarPorId(id);
 }
 
