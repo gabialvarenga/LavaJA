@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
+import '../core/constants/app_config.dart';
 import '../core/storage/local_storage.dart';
 
 class WsEvent {
@@ -29,7 +30,7 @@ class WebSocketService extends ChangeNotifier {
 
     try {
       _channel = WebSocketChannel.connect(
-        Uri.parse('ws://10.221.65.1:3000'),
+        Uri.parse(AppConfig.wsUrl),
       );
 
       _channel!.sink.add(jsonEncode({

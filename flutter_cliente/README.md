@@ -148,15 +148,46 @@ lib/
 
 ---
 
+## Configuração do servidor
+
+O endereço do backend fica em **um único lugar**: [`lib/core/constants/app_config.dart`](lib/core/constants/app_config.dart).
+Basta editar o campo `host` (só o IP/nome, **sem** `http://` e **sem** a porta) — o REST e o WebSocket derivam dele automaticamente.
+
+```dart
+static const String host = 'localhost'; // <- único campo a trocar
+```
+
 ## Como executar
 
-```bash
-# 1. Com USB + adb reverse (dispositivo físico)
-adb reverse tcp:3000 tcp:3000
-flutter run
+> ⚠️ Após trocar o `host`, faça **hot restart** (tecla `R` maiúsculo) ou pare e rode de novo.
+> Hot reload (`r`) **não** atualiza constantes.
 
-# 2. Com WiFi — altere o IP em:
-#    lib/core/network/api_client.dart → _baseUrl
-#    lib/services/websocket_service.dart → Uri.parse(...)
+### Opção A — Emulador Android com `adb reverse` (recomendado)
+
+Cria um túnel do `localhost` do emulador para o `localhost` da máquina. Funciona mesmo com o
+Firewall do Windows bloqueando conexões externas ao `node.exe`.
+
+```bash
+# 1. Backend rodando na máquina (porta 3000) + RabbitMQ (Docker) ativo
+# 2. Cria o túnel (refazer sempre que o emulador for reiniciado)
+adb reverse tcp:3000 tcp:3000
+# 3. app_config.dart  ->  host = 'localhost'
 flutter run
+```
+
+### Opção B — Emulador Android sem túnel
+
+O emulador acessa o `localhost` da máquina pelo IP especial `10.0.2.2`.
+Requer que o Firewall do Windows libere o `node.exe` para conexões de entrada.
+
+```dart
+// app_config.dart
+static const String host = '10.0.2.2';
+```
+
+### Opção C — Dispositivo físico na mesma rede WiFi
+
+```dart
+// app_config.dart  ->  host = IP da máquina na rede (ex: ipconfig)
+static const String host = '192.168.0.193';
 ```
