@@ -4,6 +4,7 @@ const { migrate } = require('./config/migrate');
 const { connect } = require('./config/rabbitmq');
 const wsGateway = require('./config/websocket');
 const app = require('./app');
+const { log } = require('./config/logger');
 
 const PORT = process.env.PORT || 3000;
 
@@ -18,9 +19,9 @@ async function start() {
   await wsGateway.iniciar(httpServer);
 
   httpServer.listen(PORT, () => {
-    console.log(`🚗💦 LavaJÁ Backend rodando em http://localhost:${PORT}`);
-    console.log(`🔌 WebSocket disponível em  ws://localhost:${PORT}`);
-    console.log(`📋 Endpoints REST em        http://localhost:${PORT}/api`);
+    log('SERVER', `LavaJA Backend rodando em http://localhost:${PORT}`);
+    log('WS',     `WebSocket disponivel em  ws://localhost:${PORT}`);
+    log('REST',   `Endpoints REST em        http://localhost:${PORT}/api`);
   });
 }
 

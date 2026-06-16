@@ -1,5 +1,6 @@
 const amqp = require('amqplib');
 require('dotenv').config();
+const { log, warn, err } = require('./logger');
 
 const RABBITMQ_URL = process.env.RABBITMQ_URL || 'amqp://localhost';
 
@@ -25,9 +26,9 @@ async function connect() {
     connection = await amqp.connect(RABBITMQ_URL);
     channel = await connection.createChannel();
     await channel.assertExchange(EXCHANGES.SOLICITACOES, 'topic', { durable: true });
-    console.log('✅ RabbitMQ conectado');
+    log('MOM', 'RabbitMQ conectado');
   } catch (err) {
-    console.warn('⚠️  RabbitMQ indisponível — modo offline (eventos não serão publicados):', err.message);
+    warn('MOM', `RabbitMQ indisponivel — modo offline: ${err.message}`);
   }
 }
 
@@ -36,9 +37,9 @@ async function publish(routingKey, payload) {
   try {
     const msg = Buffer.from(JSON.stringify({ ...payload, timestamp: new Date().toISOString() }));
     channel.publish(EXCHANGES.SOLICITACOES, routingKey, msg, { persistent: true });
-    console.log(`📤 Evento publicado: [${routingKey}]`, payload.id || '');
+    log('MOM', `Evento publicado: [${routingKey}] ${payload.id || ''}`);
   } catch (err) {
-    console.error('Erro ao publicar evento:', err.message);
+    err('MOM', `Erro ao publicar evento: ${err.message}`);
   }
 }
 

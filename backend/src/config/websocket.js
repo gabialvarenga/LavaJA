@@ -1,6 +1,7 @@
 const { WebSocketServer } = require('ws');
 const amqp = require('amqplib');
 require('dotenv').config();
+const { log, warn, err: logErr } = require('./logger');
 
 const RABBITMQ_URL = process.env.RABBITMQ_URL || 'amqp://localhost';
 const EXCHANGE     = 'lavaja.solicitacoes';
@@ -28,7 +29,7 @@ async function iniciar(httpServer) {
           usuario_id = msg.usuario_id;
           tipo = msg.tipo;
           clientes.set(usuario_id, { ws, tipo });
-          console.log(`🔌 WebSocket conectado: ${tipo} [${usuario_id}]`);
+          log('WS', `conectado: ${tipo} [${usuario_id}]`);
           ws.send(JSON.stringify({ evento: 'conectado', mensagem: 'WebSocket ativo' }));
         }
       } catch (_) {}
@@ -37,12 +38,12 @@ async function iniciar(httpServer) {
     ws.on('close', () => {
       if (usuario_id) {
         clientes.delete(usuario_id);
-        console.log(`🔌 WebSocket desconectado: ${tipo} [${usuario_id}]`);
+        log('WS', `desconectado: ${tipo} [${usuario_id}]`);
       }
     });
   });
 
-  console.log('✅ WebSocket Gateway iniciado');
+  log('WS', 'Gateway iniciado');
 
   try {
     const conn    = await amqp.connect(RABBITMQ_URL);
@@ -60,7 +61,7 @@ async function iniciar(httpServer) {
         const evento    = msg.fields.routingKey;
         const payload   = JSON.parse(msg.content.toString());
 
-        console.log(`📥 Evento recebido do RabbitMQ: [${evento}]`, payload.id || '');
+        log('CONSUMER', `Evento recebido: [${evento}] ${payload.id || ''}`);
 
         const pacote = JSON.stringify({ evento, dados: payload });
 
@@ -73,14 +74,14 @@ async function iniciar(httpServer) {
 
         channel.ack(msg);
       } catch (err) {
-        console.error('Erro ao processar mensagem do RabbitMQ:', err.message);
+        logErr('CONSUMER', `Erro ao processar mensagem: ${err.message}`);
         channel.nack(msg, false, false);
       }
     });
 
-    console.log('✅ Consumer RabbitMQ → WebSocket Gateway ativo');
+    log('CONSUMER', 'RabbitMQ → WebSocket Gateway ativo');
   } catch (err) {
-    console.warn('⚠️  RabbitMQ indisponível — WebSocket gateway em modo offline:', err.message);
+    warn('MOM', `RabbitMQ indisponivel — WebSocket gateway em modo offline: ${err.message}`);
   }
 }
 
@@ -88,7 +89,7 @@ function enviarParaUsuario(usuario_id, pacote) {
   const cliente = clientes.get(usuario_id);
   if (cliente && cliente.ws.readyState === 1) {
     cliente.ws.send(pacote);
-    console.log(`📤 WebSocket → usuário [${usuario_id}]`);
+    log('WS', `→ usuario [${usuario_id}]`);
   }
 }
 
@@ -100,7 +101,7 @@ function enviarParaTipo(tipo, pacote) {
       enviados++;
     }
   });
-  console.log(`📤 WebSocket broadcast → ${enviados} ${tipo}(s) conectado(s)`);
+  log('WS', `broadcast → ${enviados} ${tipo}(s) conectado(s)`);
 }
 
 module.exports = { iniciar };

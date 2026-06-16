@@ -1,12 +1,12 @@
 const { initDb } = require('../src/config/database');
+const { log, warn } = require('../src/config/logger');
 
 const FORCE = process.argv.includes('--force');
 
 async function main() {
   if (!FORCE) {
-    console.log('⚠️  Isso vai apagar TODOS os dados do banco (usuarios, veiculos, solicitacoes, historico).');
-    console.log('   Rode com --force para confirmar:\n');
-    console.log('   node scripts/clear_db.js --force\n');
+    warn('DB', 'Isso vai apagar TODOS os dados do banco (usuarios, veiculos, solicitacoes, historico).');
+    warn('DB', 'Rode com --force para confirmar: node scripts/clear_db.js --force');
     process.exit(0);
   }
 
@@ -17,10 +17,10 @@ async function main() {
 
   for (const tabela of tabelas) {
     db.exec(`DELETE FROM ${tabela}`);
-    console.log(`🗑️  ${tabela} limpa`);
+    log('DB', `${tabela} limpa`);
   }
 
-  console.log('\n✅ Banco zerado. Estrutura mantida.\n');
+  log('DB', 'Banco zerado. Estrutura mantida.');
   process.exit(0);
 }
 

@@ -1,4 +1,5 @@
 const { initDb } = require('./database');
+const { log } = require('./logger');
 
 async function migrate() {
   const db = await initDb();
@@ -42,7 +43,7 @@ async function migrate() {
     );
   `);
 
-  console.log('✅ Migrations executadas com sucesso!');
+  log('DB', 'Migrations executadas com sucesso!');
   return db;
 }
 
