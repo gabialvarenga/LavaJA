@@ -231,47 +231,46 @@ Routing keys publicadas:
 
 ### 6.1 Logs de Console (Fluxo Completo — 22/05/2026)
 
-O trecho abaixo demonstra o ciclo completo de uma solicitação, desde a criação até a conclusão, com producer e consumer operando de forma assíncrona no mesmo processo do servidor Node.js:
 
 **Terminal — Servidor Node.js (producer + consumer no mesmo processo):**
 ```
-✅ Migrations executadas com sucesso!
-✅ RabbitMQ conectado
-✅ WebSocket Gateway iniciado
-✅ Consumer RabbitMQ → WebSocket Gateway ativo
-🚗💦 LavaJÁ Backend rodando em http://localhost:3000
-🔌 WebSocket disponível em  ws://localhost:3000
-📋 Endpoints REST em        http://localhost:3000/api
+2026-05-22 01:15:40 [DB]       Migrations executadas com sucesso!
+2026-05-22 01:15:40 [MOM]      RabbitMQ conectado
+2026-05-22 01:15:40 [WS]       Gateway iniciado
+2026-05-22 01:15:40 [CONSUMER] RabbitMQ → WebSocket Gateway ativo
+2026-05-22 01:15:40 [SERVER]   LavaJA Backend rodando em http://localhost:3000
+2026-05-22 01:15:40 [WS]       WebSocket disponivel em  ws://localhost:3000
+2026-05-22 01:15:40 [REST]     Endpoints REST em        http://localhost:3000/api
 
-📤 Evento publicado: [solicitacao.criada] f453970e-1f05-4031-9995-281988ad5dcc
-📥 Evento recebido do RabbitMQ: [solicitacao.criada] f453970e-1f05-4031-9995-281988ad5dcc
-📤 WebSocket broadcast → 0 lavador(s) conectado(s)
+2026-05-22 01:15:43 [PRODUCER] [solicitacao.criada] f453970e-1f05-4031-9995-281988ad5dcc
+2026-05-22 01:15:43 [CONSUMER] Evento recebido: [solicitacao.criada] f453970e-1f05-4031-9995-281988ad5dcc
+2026-05-22 01:15:43 [WS]       broadcast → 0 lavador(s) conectado(s)
 
-📤 Evento publicado: [solicitacao.aceita] f453970e-1f05-4031-9995-281988ad5dcc
-📥 Evento recebido do RabbitMQ: [solicitacao.aceita] f453970e-1f05-4031-9995-281988ad5dcc
+2026-05-22 01:16:05 [PRODUCER] [solicitacao.aceita] f453970e-1f05-4031-9995-281988ad5dcc
+2026-05-22 01:16:05 [CONSUMER] Evento recebido: [solicitacao.aceita] f453970e-1f05-4031-9995-281988ad5dcc
 
-📤 Evento publicado: [solicitacao.em_execucao] f453970e-1f05-4031-9995-281988ad5dcc
-📥 Evento recebido do RabbitMQ: [solicitacao.em_execucao] f453970e-1f05-4031-9995-281988ad5dcc
+2026-05-22 01:16:20 [PRODUCER] [solicitacao.em_execucao] f453970e-1f05-4031-9995-281988ad5dcc
+2026-05-22 01:16:20 [CONSUMER] Evento recebido: [solicitacao.em_execucao] f453970e-1f05-4031-9995-281988ad5dcc
 
-📤 Evento publicado: [solicitacao.concluida] f453970e-1f05-4031-9995-281988ad5dcc
-📥 Evento recebido do RabbitMQ: [solicitacao.concluida] f453970e-1f05-4031-9995-281988ad5dcc
+2026-05-22 01:16:45 [PRODUCER] [solicitacao.concluida] f453970e-1f05-4031-9995-281988ad5dcc
+2026-05-22 01:16:45 [CONSUMER] Evento recebido: [solicitacao.concluida] f453970e-1f05-4031-9995-281988ad5dcc
 
-📤 Evento publicado: [solicitacao.criada] a8bb598e-f9aa-47f5-8471-c4f148857a71
-📥 Evento recebido do RabbitMQ: [solicitacao.criada] a8bb598e-f9aa-47f5-8471-c4f148857a71
-📤 WebSocket broadcast → 0 lavador(s) conectado(s)
+2026-05-22 01:17:02 [PRODUCER] [solicitacao.criada] a8bb598e-f9aa-47f5-8471-c4f148857a71
+2026-05-22 01:17:02 [CONSUMER] Evento recebido: [solicitacao.criada] a8bb598e-f9aa-47f5-8471-c4f148857a71
+2026-05-22 01:17:02 [WS]       broadcast → 0 lavador(s) conectado(s)
 
-📤 Evento publicado: [solicitacao.recusada] a8bb598e-f9aa-47f5-8471-c4f148857a71
-📥 Evento recebido do RabbitMQ: [solicitacao.recusada] a8bb598e-f9aa-47f5-8471-c4f148857a71
+2026-05-22 01:17:30 [PRODUCER] [solicitacao.recusada] a8bb598e-f9aa-47f5-8471-c4f148857a71
+2026-05-22 01:17:30 [CONSUMER] Evento recebido: [solicitacao.recusada] a8bb598e-f9aa-47f5-8471-c4f148857a71
 
-📤 Evento publicado: [solicitacao.criada] 2bc33e45-79bb-4056-933a-52deda06714b
-📥 Evento recebido do RabbitMQ: [solicitacao.criada] 2bc33e45-79bb-4056-933a-52deda06714b
-📤 WebSocket broadcast → 0 lavador(s) conectado(s)
+2026-05-22 01:17:48 [PRODUCER] [solicitacao.criada] 2bc33e45-79bb-4056-933a-52deda06714b
+2026-05-22 01:17:48 [CONSUMER] Evento recebido: [solicitacao.criada] 2bc33e45-79bb-4056-933a-52deda06714b
+2026-05-22 01:17:48 [WS]       broadcast → 0 lavador(s) conectado(s)
 
-📤 Evento publicado: [solicitacao.cancelada] 2bc33e45-79bb-4056-933a-52deda06714b
-📥 Evento recebido do RabbitMQ: [solicitacao.cancelada] 2bc33e45-79bb-4056-933a-52deda06714b
+2026-05-22 01:17:58 [PRODUCER] [solicitacao.cancelada] 2bc33e45-79bb-4056-933a-52deda06714b
+2026-05-22 01:17:58 [CONSUMER] Evento recebido: [solicitacao.cancelada] 2bc33e45-79bb-4056-933a-52deda06714b
 ```
 
-Os logs `📤 Evento publicado` são gerados por `rabbitmq.js` (producer) e os `📥 Evento recebido do RabbitMQ` por `websocket.js` (consumer) — módulos completamente independentes que se comunicam exclusivamente pelo broker.
+Os logs `[PRODUCER]` são gerados por `rabbitmq.js` no momento da publicação; os `[CONSUMER]` por `websocket.js` no callback de recebimento — módulos completamente independentes que se comunicam exclusivamente pelo broker.
 
 ---
 

@@ -37,9 +37,9 @@ async function publish(routingKey, payload) {
   try {
     const msg = Buffer.from(JSON.stringify({ ...payload, timestamp: new Date().toISOString() }));
     channel.publish(EXCHANGES.SOLICITACOES, routingKey, msg, { persistent: true });
-    log('MOM', `Evento publicado: [${routingKey}] ${payload.id || ''}`);
+    log('PRODUCER', `[${routingKey}] ${payload.id || ''}`);
   } catch (err) {
-    err('MOM', `Erro ao publicar evento: ${err.message}`);
+    err('PRODUCER', `Erro ao publicar evento: ${err.message}`);
   }
 }
 
