@@ -39,3 +39,9 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# iOS — projeto usa apenas Android
+/ios/
+
+# Artefato Node.js gerado indevidamente
+package-lock.json
