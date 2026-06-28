@@ -1,0 +1,27 @@
+name: lavaja_lavador
+description: LavaJÁ — App do Lavador (prestador de serviço)
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: ">=2.16.2 <3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  http: 0.13.4
+  web_socket_channel: ^2.3.0
+  shared_preferences: ^2.0.15
+  provider: ^6.0.5
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^1.0.0
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/icon/
