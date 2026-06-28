@@ -47,12 +47,13 @@ lib/
 │   └── websocket_service.dart     ← registra como tipo='lavador'
 ├── screens/
 │   ├── login_screen.dart          ← tela de boas-vindas
-│   ├── entrar_screen.dart         ← login por e-mail
+│   ├── entrar_screen.dart         ← login por e-mail e senha
 │   ├── cadastro_screen.dart       ← cadastro de lavador
-│   ├── main_screen.dart           ← 3 tabs com bottom nav
+│   ├── main_screen.dart           ← 4 tabs com bottom nav
 │   ├── pendentes_tab.dart         ← lista pendentes + push WS
 │   ├── andamento_tab.dart         ← aceitas + em execução
 │   ├── historico_tab.dart         ← concluídas/recusadas
+│   ├── perfil_tab.dart            ← nome, e-mail e logout
 │   └── detalhes_solicitacao_screen.dart ← ações por status
 └── widgets/
     ├── solicitacao_card.dart

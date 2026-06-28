@@ -116,12 +116,12 @@ projeto-lamd-2026-lavaJA/
 │       ├── core/             # constants (teal), network, storage, formatters
 │       ├── models/           # Solicitacao, Usuario
 │       ├── services/         # auth, solicitacao (aceitar/recusar/iniciar/concluir), websocket
-│       ├── screens/          # login, pendentes, andamento, histórico, detalhes
+│       ├── screens/          # login, pendentes, andamento, histórico, perfil, detalhes
 │       └── widgets/          # SolicitacaoCard, StatusTag, TimelineItem
 └── docs/
     ├── Proposta_LavaJA.pdf
     ├── Integracao_MOM.md
-    ├── Relatorio_Tecnico_Final.md
+    ├── Relatorio-Final.md
     ├── LavaJA_Postman_Collection.json
     └── images/               # diagramas de arquitetura e DER
 ```
