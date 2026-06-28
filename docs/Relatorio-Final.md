@@ -73,7 +73,7 @@ O backend expõe uma API RESTful implementada com Express.js, organizada segundo
 | Repositories | Único ponto de acesso ao banco — isolamento do SQLite |
 | Models | Regras de domínio (estados válidos, transições permitidas) |
 
-**Autenticação:** por simplificação acadêmica, o sistema usa o header `x-usuario-id` (UUID do usuário cadastrado) em vez de JWT. O middleware `autenticar` valida o ID no banco e injeta `req.usuario` em toda a cadeia de middlewares.
+**Autenticação:** o cadastro exige e-mail, nome e senha (mínimo 6 caracteres). A senha é armazenada como hash derivado com `crypto.scryptSync` (salt aleatório de 16 bytes + 64 bytes de hash), nunca em texto puro. O login valida e-mail e senha; em caso de sucesso, o backend retorna o UUID do usuário. As requisições subsequentes enviam esse UUID no header `x-usuario-id`, que o middleware `autenticar` valida no banco e injeta como `req.usuario` em toda a cadeia de middlewares.
 
 **Endpoints principais:**
 
@@ -140,7 +140,7 @@ O app do lavador (`flutter_lavador`) compartilha a mesma arquitetura do app do c
 - **Tipo de registro:** `AuthService` envia `tipo: 'lavador'` ao cadastrar; `EntrarScreen` valida que o usuário logado é do tipo `lavador`.
 - **WebSocket:** registra-se com `{tipo: 'lavador', usuario_id}` — o gateway roteia `solicitacao.criada` para este tipo de conexão.
 - **Serviço:** `SolicitacaoService` expõe `aceitar`, `recusar`, `iniciar` e `concluir` em vez de `criar` e `cancelar`.
-- **Navegação:** 3 tabs — Pendentes, Em Andamento e Histórico — em vez das 4 tabs do cliente.
+- **Navegação:** 4 tabs — Pendentes, Em Andamento, Histórico e Perfil — mesma quantidade do app cliente.
 
 ### 5.2 Telas
 
@@ -150,6 +150,7 @@ O app do lavador (`flutter_lavador`) compartilha a mesma arquitetura do app do c
 | `AndamentoTab` | Lista solicitações com status `aceita` ou `em_execucao` vinculadas ao lavador. |
 | `HistoricoTab` | Lista solicitações finalizadas (`concluida`, `recusada`, `cancelada`) com filtros. |
 | `DetalhesSolicitacaoScreen` | Exibe dados completos. Botões condicionais: pendente → Aceitar/Recusar; aceita → Iniciar; em execução → Concluir. |
+| `PerfilTab` | Exibe nome, e-mail e tipo de conta do lavador logado. Botão de logout desconecta o WebSocket e redireciona para a tela de login. |
 
 ---
 

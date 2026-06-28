@@ -6,6 +6,7 @@ erDiagram
         TEXT email "UNIQUE"
         TEXT telefone
         TEXT tipo "cliente ou lavador"
+        TEXT senha_hash
         TEXT criado_em
     }
 
