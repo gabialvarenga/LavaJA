@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../core/constants/app_colors.dart';
-import '../core/storage/local_storage.dart';
 import '../services/websocket_service.dart';
 import 'pendentes_tab.dart';
 import 'andamento_tab.dart';
 import 'historico_tab.dart';
+import 'perfil_tab.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({Key? key}) : super(key: key);
@@ -21,6 +21,7 @@ class _MainScreenState extends State<MainScreen> {
     PendentesTab(),
     AndamentoTab(),
     HistoricoTab(),
+    PerfilTab(),
   ];
 
   @override
@@ -29,13 +30,6 @@ class _MainScreenState extends State<MainScreen> {
     WidgetsBinding.instance!.addPostFrameCallback((_) {
       context.read<WebSocketService>().conectar();
     });
-  }
-
-  Future<void> _logout() async {
-    context.read<WebSocketService>().desconectar();
-    await LocalStorage.clear();
-    if (!mounted) return;
-    Navigator.of(context).pushNamedAndRemoveUntil('/', (_) => false);
   }
 
   @override
@@ -67,6 +61,11 @@ class _MainScreenState extends State<MainScreen> {
             icon: Icon(Icons.list_outlined),
             activeIcon: Icon(Icons.list),
             label: 'histórico',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person_outline),
+            activeIcon: Icon(Icons.person),
+            label: 'perfil',
           ),
         ],
       ),
