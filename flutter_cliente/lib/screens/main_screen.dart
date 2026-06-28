@@ -16,18 +16,18 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen> {
   int _tabIndex = 0;
-
-  final List<Widget> _tabs = const [
-    HomeTab(),
-    HistoricoTab(),
-    VeiculosTab(),
-    PerfilTab(),
-  ];
+  final _historicoKey = GlobalKey<HistoricoTabState>();
+  late final List<Widget> _tabs;
 
   @override
   void initState() {
     super.initState();
-    // Conecta ao WebSocket assim que o usuário entra na home
+    _tabs = [
+      const HomeTab(),
+      HistoricoTab(key: _historicoKey),
+      const VeiculosTab(),
+      const PerfilTab(),
+    ];
     WidgetsBinding.instance!.addPostFrameCallback((_) {
       context.read<WebSocketService>().conectar();
     });
@@ -42,7 +42,10 @@ class _MainScreenState extends State<MainScreen> {
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _tabIndex,
-        onTap: (i) => setState(() => _tabIndex = i),
+        onTap: (i) {
+          setState(() => _tabIndex = i);
+          if (i == 1) _historicoKey.currentState?.recarregar();
+        },
         type: BottomNavigationBarType.fixed,
         backgroundColor: AppColors.bgPrimary,
         selectedItemColor: AppColors.primary,

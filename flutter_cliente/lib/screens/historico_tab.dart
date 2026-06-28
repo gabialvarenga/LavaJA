@@ -11,10 +11,10 @@ class HistoricoTab extends StatefulWidget {
   const HistoricoTab({Key? key}) : super(key: key);
 
   @override
-  State<HistoricoTab> createState() => _HistoricoTabState();
+  State<HistoricoTab> createState() => HistoricoTabState();
 }
 
-class _HistoricoTabState extends State<HistoricoTab> {
+class HistoricoTabState extends State<HistoricoTab> {
   List<Solicitacao> _todas = [];
   bool _carregando = true;
   String? _filtro;
@@ -33,6 +33,8 @@ class _HistoricoTabState extends State<HistoricoTab> {
     super.initState();
     _carregar();
   }
+
+  void recarregar() => _carregar();
 
   @override
   void didChangeDependencies() {
