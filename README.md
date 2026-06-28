@@ -32,7 +32,7 @@ Schema definido em [`backend/src/config/migrate.js`](backend/src/config/migrate.
 
 **Entidades e referências:**
 
-**Usuario:** registra clientes e lavadores com nome, e-mail único e telefone. O campo `tipo` — com CHECK restrito a `cliente` ou `lavador` — diferencia os dois perfis do sistema. Relaciona-se (1:N) com Veiculos, Solicitacoes e HistoricoStatus.
+**Usuario:** registra clientes e lavadores com nome, e-mail único, telefone e senha (armazenada como hash `scryptSync`, nunca em texto puro). O campo `tipo` — com CHECK restrito a `cliente` ou `lavador` — diferencia os dois perfis do sistema. Relaciona-se (1:N) com Veiculos, Solicitacoes e HistoricoStatus.
 
 **Veiculo:** armazena os veículos cadastrados pelos clientes — placa (única no sistema), modelo e cor. Pertence a um único Usuario (N:1) e pode estar associado a múltiplas Solicitacoes ao longo do tempo.
 
@@ -87,7 +87,7 @@ NODE_ENV=development
 
 Após iniciar, a API estará disponível em `http://localhost:3000/api` e o WebSocket em `ws://localhost:3000`.
 
-> O RabbitMQ é opcional na Sprint 1. O sistema opera em modo offline caso o broker não esteja disponível.
+> O RabbitMQ é opcional. O sistema opera em modo offline caso o broker não esteja disponível — a API REST continua funcional.
 
 ---
 

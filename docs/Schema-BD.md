@@ -42,7 +42,8 @@ erDiagram
     }
 
     usuarios ||--o{ veiculos : "possui"
-    usuarios ||--o{ solicitacoes : "abre como cliente"
+    usuarios ||--o{ solicitacoes : "abre (cliente_id)"
+    usuarios ||--o{ solicitacoes : "executa (lavador_id)"
     usuarios ||--o{ historico_status : "registra alteracao"
     veiculos ||--o{ solicitacoes : "usado em"
     solicitacoes ||--o{ historico_status : "tem historico"
