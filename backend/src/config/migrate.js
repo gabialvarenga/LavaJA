@@ -11,6 +11,7 @@ async function migrate() {
       email TEXT NOT NULL UNIQUE,
       telefone TEXT,
       tipo TEXT NOT NULL CHECK(tipo IN ('cliente','lavador')),
+      senha_hash TEXT NOT NULL DEFAULT '',
       criado_em TEXT NOT NULL DEFAULT (datetime('now'))
     );
     CREATE TABLE IF NOT EXISTS veiculos (
@@ -42,6 +43,8 @@ async function migrate() {
       criado_em TEXT NOT NULL DEFAULT (datetime('now'))
     );
   `);
+
+  try { db.exec(`ALTER TABLE usuarios ADD COLUMN senha_hash TEXT NOT NULL DEFAULT ''`); } catch (_) {}
 
   log('DB', 'Migrations executadas com sucesso!');
   return db;

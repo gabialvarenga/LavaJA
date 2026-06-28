@@ -5,11 +5,11 @@
 const { v4: uuidv4 } = require('uuid');
 const { getDb } = require('../config/database');
 
-function criar({ nome, email, telefone, tipo }) {
+function criar({ nome, email, telefone, tipo, senha_hash }) {
   const db = getDb();
   const id = uuidv4();
-  db.prepare('INSERT INTO usuarios (id, nome, email, telefone, tipo) VALUES (?,?,?,?,?)')
-    .run(id, nome, email, telefone || null, tipo);
+  db.prepare('INSERT INTO usuarios (id, nome, email, telefone, tipo, senha_hash) VALUES (?,?,?,?,?,?)')
+    .run(id, nome, email, telefone || null, tipo, senha_hash);
   return buscarPorId(id);
 }
 
