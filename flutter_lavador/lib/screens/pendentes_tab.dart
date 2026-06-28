@@ -31,7 +31,6 @@ class _PendentesTabState extends State<PendentesTab> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    // Evento solicitacao.criada chega via broadcast para todos os lavadores conectados
     final wsEvent = context.watch<WebSocketService>().ultimoEvento;
     if (wsEvent != null && wsEvent != _ultimoEvento) {
       _ultimoEvento = wsEvent;
@@ -69,10 +68,16 @@ class _PendentesTabState extends State<PendentesTab> {
   void _abrirDetalhes(Solicitacao s) async {
     await Navigator.of(context).push(
       MaterialPageRoute(
-          builder: (_) =>
-              DetalhesSolicitacaoScreen(solicitacaoId: s.id)),
+          builder: (_) => DetalhesSolicitacaoScreen(solicitacaoId: s.id)),
     );
     _carregar();
+  }
+
+  String get _iniciais {
+    final partes = _nomeUsuario.trim().split(' ').where((p) => p.isNotEmpty).toList();
+    if (partes.isEmpty) return 'L';
+    if (partes.length == 1) return partes[0][0].toUpperCase();
+    return (partes[0][0] + partes[partes.length - 1][0]).toUpperCase();
   }
 
   @override
@@ -106,8 +111,7 @@ class _PendentesTabState extends State<PendentesTab> {
                       const Center(
                         child: Padding(
                           padding: EdgeInsets.all(32),
-                          child: CircularProgressIndicator(
-                              color: AppColors.primary),
+                          child: CircularProgressIndicator(color: AppColors.primary),
                         ),
                       )
                     else if (_erro != null)
@@ -117,8 +121,7 @@ class _PendentesTabState extends State<PendentesTab> {
                     else
                       ..._pendentes
                           .map((s) => SolicitacaoCard(
-                              solicitacao: s,
-                              onTap: () => _abrirDetalhes(s)))
+                              solicitacao: s, onTap: () => _abrirDetalhes(s)))
                           .toList(),
                     const SizedBox(height: 16),
                   ],
@@ -140,49 +143,78 @@ class _PendentesTabState extends State<PendentesTab> {
         right: 16,
         bottom: 16,
       ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text('Olá,',
-                  style: TextStyle(fontSize: 12, color: Colors.white70)),
-              Text(
-                _nomeUsuario.isNotEmpty
-                    ? _nomeUsuario.split(' ').first
-                    : 'Lavador',
-                style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w500,
-                  color: Colors.white,
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text('Olá,',
+                      style: TextStyle(fontSize: 12, color: Colors.white70)),
+                  Text(
+                    _nomeUsuario.isNotEmpty
+                        ? _nomeUsuario.split(' ').first
+                        : 'Lavador',
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.white,
+                    ),
+                  ),
+                ],
+              ),
+              CircleAvatar(
+                radius: 18,
+                backgroundColor: Colors.white24,
+                child: Text(
+                  _iniciais,
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.white,
+                  ),
                 ),
               ),
             ],
           ),
+          const SizedBox(height: 12),
           Row(
             children: [
-              Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                decoration: BoxDecoration(
-                  color: Colors.white24,
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Row(
-                  children: [
-                    const Icon(Icons.inbox, size: 14, color: Colors.white),
-                    const SizedBox(width: 6),
-                    Text(
-                      '${_pendentes.length} pendente${_pendentes.length != 1 ? 's' : ''}',
-                      style: const TextStyle(fontSize: 12, color: Colors.white),
-                    ),
-                  ],
-                ),
-              ),
+              _buildStat(_pendentes.length.toString(), 'pendentes'),
             ],
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildStat(String valor, String label) {
+    return Expanded(
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 10),
+        decoration: BoxDecoration(
+          color: Colors.white24,
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Column(
+          children: [
+            Text(
+              valor,
+              style: const TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.w500,
+                color: Colors.white,
+              ),
+            ),
+            Text(
+              label,
+              style: const TextStyle(fontSize: 11, color: Colors.white70),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -212,8 +244,7 @@ class _PendentesTabState extends State<PendentesTab> {
           ),
           GestureDetector(
             onTap: () => setState(() => _ultimoEvento = null),
-            child: const Icon(Icons.close,
-                size: 14, color: AppColors.textTertiary),
+            child: const Icon(Icons.close, size: 14, color: AppColors.textTertiary),
           ),
         ],
       ),
@@ -262,8 +293,7 @@ class _PendentesTabState extends State<PendentesTab> {
           const SizedBox(width: 8),
           Expanded(
             child: Text(_erro!,
-                style:
-                    const TextStyle(fontSize: 12, color: AppColors.redDark)),
+                style: const TextStyle(fontSize: 12, color: AppColors.redDark)),
           ),
           TextButton(
             onPressed: _carregar,
