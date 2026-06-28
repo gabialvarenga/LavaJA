@@ -94,14 +94,36 @@ Após iniciar, a API estará disponível em `http://localhost:3000/api` e o WebS
 ## Estrutura do projeto
 
 ```
-src/
-├── models/          # regras de domínio — status válidos, transições
-├── repositories/    # único ponto de acesso ao banco
-├── services/        # lógica de negócio + publicação de eventos
-├── controllers/     # interface HTTP
-├── routes/          # mapeamento de URLs + middlewares
-├── middlewares/     # autenticação e controle de acesso por papel
-└── config/          # banco, RabbitMQ, WebSocket gateway
+projeto-lamd-2026-lavaJA/
+├── backend/                  # Node.js/Express — API REST + RabbitMQ + WebSocket
+│   └── src/
+│       ├── models/           # regras de domínio — status válidos, transições
+│       ├── repositories/     # único ponto de acesso ao banco
+│       ├── services/         # lógica de negócio + publicação de eventos
+│       ├── controllers/      # interface HTTP
+│       ├── routes/           # mapeamento de URLs + middlewares
+│       ├── middlewares/      # autenticação e controle de acesso por papel
+│       └── config/           # banco, RabbitMQ, WebSocket gateway
+├── flutter_cliente/          # App Flutter para o cliente (Sprint 3)
+│   └── lib/
+│       ├── core/             # constants, network, storage, formatters
+│       ├── models/           # Solicitacao, Usuario, Veiculo
+│       ├── services/         # auth, solicitacao, websocket
+│       ├── screens/          # login, home, detalhes, veículos, perfil
+│       └── widgets/          # SolicitacaoCard, StatusTag, TimelineItem
+├── flutter_lavador/          # App Flutter para o lavador (Sprint 4)
+│   └── lib/
+│       ├── core/             # constants (teal), network, storage, formatters
+│       ├── models/           # Solicitacao, Usuario
+│       ├── services/         # auth, solicitacao (aceitar/recusar/iniciar/concluir), websocket
+│       ├── screens/          # login, pendentes, andamento, histórico, detalhes
+│       └── widgets/          # SolicitacaoCard, StatusTag, TimelineItem
+└── docs/
+    ├── Proposta_LavaJA.pdf
+    ├── Integracao_MOM.md
+    ├── Relatorio_Tecnico_Final.md
+    ├── LavaJA_Postman_Collection.json
+    └── images/               # diagramas de arquitetura e DER
 ```
 
 ---

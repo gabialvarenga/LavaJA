@@ -9,3 +9,4 @@ Eles estão disponíveis no Google Drive:
 |-------|--------|----------|
 | `MOM-Video.mp4` | Sprint 2 | Demonstração do Middleware Orientado a Mensagens (RabbitMQ) — publicação e consumo de eventos |
 | `sprint-3.mp4` | Sprint 3 | Demonstração do app Flutter do cliente integrado ao backend REST e atualização assíncrona via WebSocket |
+| `sprint-4.mp4` | Sprint 4 | Screencast (3–5 min) com os dois apps rodando simultaneamente — fluxo completo cliente → MOM → lavador |
