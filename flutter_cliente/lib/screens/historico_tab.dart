@@ -25,7 +25,7 @@ class HistoricoTabState extends State<HistoricoTab> {
     _Filtro(label: 'Todas', valor: null),
     _Filtro(label: 'Ativas', valor: 'ativas'),
     _Filtro(label: 'Concluídas', valor: 'concluida'),
-    _Filtro(label: 'Canceladas', valor: 'cancelada'),
+    _Filtro(label: 'Recusadas', valor: 'recusadas'),
   ];
 
   @override
@@ -72,6 +72,12 @@ class HistoricoTabState extends State<HistoricoTab> {
   List<Solicitacao> get _filtradas {
     if (_filtro == null) return _todas;
     if (_filtro == 'ativas') return _todas.where((s) => s.status.isAtiva).toList();
+    if (_filtro == 'recusadas') {
+      return _todas.where((s) =>
+        s.status == StatusSolicitacao.recusada ||
+        s.status == StatusSolicitacao.cancelada
+      ).toList();
+    }
     return _todas.where((s) => s.status.name == _filtro).toList();
   }
 
