@@ -8,7 +8,7 @@ O LavaJÁ é uma plataforma de solicitação e acompanhamento de lavagem de veí
 
 A arquitetura adota uma abordagem orientada a eventos (Event-Driven Architecture), com separação clara de responsabilidades entre os componentes. O backend provê a API REST, a persistência e a mensageria assíncrona, enquanto os apps móveis consomem esses serviços.
 
-![Diagrama de Arquitetura](docs/images/Diagrama-Arquitetura_LavaJA.drawio.png)
+![Diagrama de Arquitetura](docs/Sprint%201/Diagrama-Arquitetura_LavaJA.drawio.png)
 
 **Principais componentes:**
 
@@ -26,7 +26,7 @@ A arquitetura adota uma abordagem orientada a eventos (Event-Driven Architecture
 
 ## Modelo de dados
 
-![Schema do Banco de Dados](docs/images/DiagramaDER.png)
+![Schema do Banco de Dados](docs/Sprint%201/DiagramaDER.png)
 
 Schema definido em [`backend/src/config/migrate.js`](backend/src/config/migrate.js)
 
@@ -119,11 +119,10 @@ projeto-lamd-2026-lavaJA/
 │       ├── screens/          # login, pendentes, andamento, histórico, perfil, detalhes
 │       └── widgets/          # SolicitacaoCard, StatusTag, TimelineItem
 └── docs/
-    ├── Proposta_LavaJA.pdf
-    ├── Integracao_MOM.md
-    ├── Relatorio-Final.md
-    ├── LavaJA_Postman_Collection.json
-    └── images/               # diagramas de arquitetura e DER
+    ├── Sprint 1/             # proposta, postman, diagramas de arquitetura e DER
+    ├── Sprint 2/             # integração MOM e evidências RabbitMQ
+    ├── Sprint 3/             # schema do banco de dados
+    └── Sprint 4/             # relatório final
 ```
 
 ---
