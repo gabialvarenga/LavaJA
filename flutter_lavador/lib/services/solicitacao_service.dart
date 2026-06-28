@@ -31,8 +31,10 @@ class SolicitacaoService {
   }
 
   static Future<Solicitacao> recusar(String id) async {
+    final userId = await LocalStorage.getUserId();
     final response = await ApiClient.patch('/solicitacoes/$id/status', {
       'status': 'recusada',
+      'lavador_id': userId,
     });
     final data = ApiClient.parseResponse(response) as Map<String, dynamic>;
     return Solicitacao.fromJson(data);
