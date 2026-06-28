@@ -396,18 +396,24 @@ class _DetalhesSolicitacaoScreenState
 
     // Fallback visual quando histórico não vem no payload
     final statusOrdem = s.status == StatusSolicitacao.recusada
-        ? ['pendente', 'recusada']
-        : ['pendente', 'aceita', 'em_execucao', 'concluida'];
+        ? [StatusSolicitacao.pendente, StatusSolicitacao.recusada]
+        : [
+            StatusSolicitacao.pendente,
+            StatusSolicitacao.aceita,
+            StatusSolicitacao.emExecucao,
+            StatusSolicitacao.concluida,
+          ];
+
+    final currentIdx = statusOrdem.indexOf(s.status);
 
     return statusOrdem.asMap().entries.map((entry) {
       final i = entry.key;
-      final st = StatusSolicitacaoX.fromString(statusOrdem[i]);
-      final currentIdx = statusOrdem.indexOf(s.status.name);
+      final st = statusOrdem[i];
 
       TimelineDotState dotState;
       if (i < currentIdx) {
         dotState = TimelineDotState.done;
-      } else if (statusOrdem[i] == s.status.name) {
+      } else if (st == s.status) {
         dotState =
             s.status.isFinal ? TimelineDotState.done : TimelineDotState.current;
       } else {
