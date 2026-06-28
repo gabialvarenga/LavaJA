@@ -22,7 +22,7 @@ function listar(req, res) {
 
 function login(req, res) {
   try {
-    return res.json(usuarioService.login(req.body.email));
+    return res.json(usuarioService.login(req.body.email, req.body.senha));
   } catch (e) { return res.status(e.status || 500).json({ erro: e.erro || e.message }); }
 }
 

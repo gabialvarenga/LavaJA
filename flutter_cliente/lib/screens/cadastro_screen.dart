@@ -15,6 +15,10 @@ class _CadastroScreenState extends State<CadastroScreen> {
   final _nomeCtrl = TextEditingController();
   final _emailCtrl = TextEditingController();
   final _telefoneCtrl = TextEditingController();
+  final _senhaCtrl = TextEditingController();
+  final _confirmarSenhaCtrl = TextEditingController();
+  bool _obscureSenha = true;
+  bool _obscureConfirmar = true;
   bool _carregando = false;
   String? _erro;
 
@@ -23,6 +27,8 @@ class _CadastroScreenState extends State<CadastroScreen> {
     _nomeCtrl.dispose();
     _emailCtrl.dispose();
     _telefoneCtrl.dispose();
+    _senhaCtrl.dispose();
+    _confirmarSenhaCtrl.dispose();
     super.dispose();
   }
 
@@ -37,6 +43,7 @@ class _CadastroScreenState extends State<CadastroScreen> {
         nome: _nomeCtrl.text.trim(),
         email: _emailCtrl.text.trim(),
         telefone: _telefoneCtrl.text.trim(),
+        senha: _senhaCtrl.text,
       );
       if (!mounted) return;
       Navigator.of(context).pushAndRemoveUntil(
@@ -122,6 +129,42 @@ class _CadastroScreenState extends State<CadastroScreen> {
                     validator: (v) =>
                         (v == null || v.trim().isEmpty) ? 'Informe o telefone' : null,
                   ),
+                  _buildField(
+                    label: 'Senha',
+                    controller: _senhaCtrl,
+                    hint: 'Mínimo 6 caracteres',
+                    obscureText: _obscureSenha,
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        _obscureSenha
+                            ? Icons.visibility_off_outlined
+                            : Icons.visibility_outlined,
+                        size: 18,
+                        color: AppColors.textTertiary,
+                      ),
+                      onPressed: () => setState(() => _obscureSenha = !_obscureSenha),
+                    ),
+                    validator: (v) =>
+                        (v == null || v.length < 6) ? 'Mínimo 6 caracteres' : null,
+                  ),
+                  _buildField(
+                    label: 'Confirmar senha',
+                    controller: _confirmarSenhaCtrl,
+                    hint: 'Repita a senha',
+                    obscureText: _obscureConfirmar,
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        _obscureConfirmar
+                            ? Icons.visibility_off_outlined
+                            : Icons.visibility_outlined,
+                        size: 18,
+                        color: AppColors.textTertiary,
+                      ),
+                      onPressed: () =>
+                          setState(() => _obscureConfirmar = !_obscureConfirmar),
+                    ),
+                    validator: (v) => (v != _senhaCtrl.text) ? 'As senhas não coincidem' : null,
+                  ),
                 ]),
                 if (_erro != null) ...[
                   const SizedBox(height: 12),
@@ -206,6 +249,8 @@ class _CadastroScreenState extends State<CadastroScreen> {
     required String hint,
     TextInputType? keyboardType,
     String? Function(String?)? validator,
+    bool obscureText = false,
+    Widget? suffixIcon,
   }) {
     return Padding(
       padding: const EdgeInsets.only(top: 12),
@@ -223,12 +268,14 @@ class _CadastroScreenState extends State<CadastroScreen> {
           TextFormField(
             controller: controller,
             keyboardType: keyboardType,
+            obscureText: obscureText,
             validator: validator,
             style: const TextStyle(fontSize: 13, color: AppColors.textPrimary),
             decoration: InputDecoration(
               hintText: hint,
               hintStyle:
                   const TextStyle(fontSize: 12, color: AppColors.textTertiary),
+              suffixIcon: suffixIcon,
               contentPadding:
                   const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
               border: OutlineInputBorder(

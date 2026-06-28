@@ -7,12 +7,14 @@ class AuthService {
     required String nome,
     required String email,
     required String telefone,
+    required String senha,
   }) async {
     final response = await ApiClient.post('/usuarios', {
       'nome': nome,
       'email': email,
       'telefone': telefone,
       'tipo': 'lavador',
+      'senha': senha,
     });
 
     final data = ApiClient.parseResponse(response) as Map<String, dynamic>;

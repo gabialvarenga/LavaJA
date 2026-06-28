@@ -14,19 +14,27 @@ class EntrarScreen extends StatefulWidget {
 
 class _EntrarScreenState extends State<EntrarScreen> {
   final _emailCtrl = TextEditingController();
+  final _senhaCtrl = TextEditingController();
+  bool _obscureSenha = true;
   bool _carregando = false;
   String? _erro;
 
   @override
   void dispose() {
     _emailCtrl.dispose();
+    _senhaCtrl.dispose();
     super.dispose();
   }
 
   Future<void> _entrar() async {
     final email = _emailCtrl.text.trim();
+    final senha = _senhaCtrl.text;
     if (email.isEmpty || !email.contains('@')) {
       setState(() => _erro = 'Informe um e-mail válido');
+      return;
+    }
+    if (senha.isEmpty) {
+      setState(() => _erro = 'Informe a senha');
       return;
     }
 
@@ -37,7 +45,7 @@ class _EntrarScreenState extends State<EntrarScreen> {
 
     try {
       final response =
-          await ApiClient.post('/usuarios/login', {'email': email});
+          await ApiClient.post('/usuarios/login', {'email': email, 'senha': senha});
       final data = ApiClient.parseResponse(response) as Map<String, dynamic>;
       final usuario = Usuario.fromJson(data);
 
@@ -68,6 +76,32 @@ class _EntrarScreenState extends State<EntrarScreen> {
         _carregando = false;
       });
     }
+  }
+
+  InputDecoration _inputDecoration({
+    required String hint,
+    required IconData prefixIconData,
+    Widget? suffixIcon,
+  }) {
+    return InputDecoration(
+      hintText: hint,
+      hintStyle: const TextStyle(fontSize: 13, color: AppColors.textTertiary),
+      prefixIcon: Icon(prefixIconData, size: 18, color: AppColors.textTertiary),
+      suffixIcon: suffixIcon,
+      contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(8),
+        borderSide: const BorderSide(color: AppColors.border, width: 0.5),
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(8),
+        borderSide: const BorderSide(color: AppColors.border, width: 0.5),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(8),
+        borderSide: const BorderSide(color: AppColors.primary, width: 1.5),
+      ),
+    );
   }
 
   @override
@@ -111,7 +145,7 @@ class _EntrarScreenState extends State<EntrarScreen> {
                             fontWeight: FontWeight.w600,
                             color: AppColors.textPrimary)),
                     const SizedBox(height: 6),
-                    const Text('Use o e-mail cadastrado para entrar.',
+                    const Text('Use seu e-mail e senha para entrar.',
                         style: TextStyle(
                             fontSize: 13, color: AppColors.textSecondary),
                         textAlign: TextAlign.center),
@@ -121,8 +155,7 @@ class _EntrarScreenState extends State<EntrarScreen> {
                       decoration: BoxDecoration(
                         color: AppColors.bgPrimary,
                         borderRadius: BorderRadius.circular(12),
-                        border:
-                            Border.all(color: AppColors.border, width: 0.5),
+                        border: Border.all(color: AppColors.border, width: 0.5),
                       ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -138,29 +171,35 @@ class _EntrarScreenState extends State<EntrarScreen> {
                             autofocus: true,
                             style: const TextStyle(
                                 fontSize: 14, color: AppColors.textPrimary),
-                            decoration: InputDecoration(
-                              hintText: 'seu@email.com',
-                              hintStyle: const TextStyle(
-                                  fontSize: 13, color: AppColors.textTertiary),
-                              prefixIcon: const Icon(Icons.email_outlined,
-                                  size: 18, color: AppColors.textTertiary),
-                              contentPadding:
-                                  const EdgeInsets.symmetric(
-                                      horizontal: 12, vertical: 12),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(8),
-                                borderSide: const BorderSide(
-                                    color: AppColors.border, width: 0.5),
-                              ),
-                              enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(8),
-                                borderSide: const BorderSide(
-                                    color: AppColors.border, width: 0.5),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(8),
-                                borderSide: const BorderSide(
-                                    color: AppColors.primary, width: 1.5),
+                            decoration: _inputDecoration(
+                              hint: 'seu@email.com',
+                              prefixIconData: Icons.email_outlined,
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+                          const Text('Senha',
+                              style: TextStyle(
+                                  fontSize: 11,
+                                  color: AppColors.textSecondary)),
+                          const SizedBox(height: 6),
+                          TextField(
+                            controller: _senhaCtrl,
+                            obscureText: _obscureSenha,
+                            style: const TextStyle(
+                                fontSize: 14, color: AppColors.textPrimary),
+                            decoration: _inputDecoration(
+                              hint: 'Sua senha',
+                              prefixIconData: Icons.lock_outline,
+                              suffixIcon: IconButton(
+                                icon: Icon(
+                                  _obscureSenha
+                                      ? Icons.visibility_off_outlined
+                                      : Icons.visibility_outlined,
+                                  size: 18,
+                                  color: AppColors.textTertiary,
+                                ),
+                                onPressed: () =>
+                                    setState(() => _obscureSenha = !_obscureSenha),
                               ),
                             ),
                             onSubmitted: (_) => _entrar(),
